@@ -1,0 +1,33 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="@string/messages_header">
+
+        <EditTextPreference
+            app:defaultValue=""
+            app:key="terminal_string"
+            app:title="@string/terminal_string"
+            app:enabled="false"
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            app:defaultValue=""
+            app:enabled="false"
+            app:key="server_id"
+            app:title="@string/server_id"
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            app:defaultValue="127.0.0.1:9001"
+            app:key="server_address"
+            app:title="@string/server_address"
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            app:defaultValue="XXXX"
+            app:key="secure_key"
+            app:title="@string/secure_key"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

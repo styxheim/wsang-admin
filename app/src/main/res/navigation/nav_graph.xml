@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/CompetitionListFragment">
+
+    <fragment
+        android:id="@+id/CompetitionListFragment"
+        android:name="ru.styxheim.wsang_admin.CompetitionListFragment"
+        android:label="@string/competition_list_fragment_label"
+        tools:layout="@layout/fragment_competition_list">
+
+        <action
+            android:id="@+id/action_ComptitionListFragment_to_CompetitionFragment"
+            app:destination="@id/ComeptitionFragment" />
+        <action
+            android:id="@+id/action_CompetitionListFragment_to_FailFragment"
+            app:destination="@id/FailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/ComeptitionFragment"
+        android:name="ru.styxheim.wsang_admin.CompetitionFragment"
+        android:label="@string/competition_fragment_label"
+        tools:layout="@layout/fragment_competition">
+
+        <action
+            android:id="@+id/action_CompetitionFragment_to_CompetitionListFragment"
+            app:destination="@id/CompetitionListFragment" />
+        <action
+            android:id="@+id/action_CompetitionFragment_to_FailFragment"
+            app:destination="@id/FailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/FailFragment"
+        android:name="ru.styxheim.wsang_admin.FailFragment"
+        android:label="Fail Fragment"
+        tools:layout="@layout/fragment_fail" >
+        <action
+            android:id="@+id/action_FailFragment_to_CompetitionListFragment"
+            app:destination="@id/CompetitionListFragment" />
+        <action
+            android:id="@+id/action_FailFragment_to_CompeititionFragment"
+            app:destination="@id/ComeptitionFragment" />
+    </fragment>
+</navigation>

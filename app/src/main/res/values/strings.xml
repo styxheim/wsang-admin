@@ -1,0 +1,60 @@
+<resources>
+    <string name="app_name">wsang-admin</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- Strings used for fragments for navigation -->
+    <string name="competition_list_fragment_label">Competition list</string>
+    <string name="competition_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <!-- Action names for action bar -->
+    <string name="updating">Updating...</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+
+    <!-- Preference Titles -->
+    <string name="messages_header">Messages</string>
+    <string name="sync_header">Sync</string>
+
+    <!-- Messages Preferences -->
+    <string name="server_id">Server Id</string>
+    <string name="server_address">Server Address</string>
+    <string name="secure_key">Secure Key</string>
+    <string name="terminal_string">Terminal Id</string>
+
+    <!-- templates defaults -->
+    <string name="competition_name">Name</string>
+    <string name="competition_status">status</string>
+    <string name="competition_id_title">Id: %d</string>
+    <string name="competition_unknown_value">&lt;unknown&gt;</string>
+    <string name="competition_name_null">Unknown (Id: %d)</string>
+    <plurals name="competition_crews">
+        <item quantity="other">Crews: %d</item>
+    </plurals>
+
+    <!-- fail fragment -->
+    <string name="fail_title">Receive data fail by:</string>
+    <string name="fail_reason_template">Unknown reason</string>
+    <string name="fail_retry">Retry</string>
+
+    <!-- competition fragment -->
+    <string name="competition_id">Id</string>
+    <string name="timestamp">Creation time</string>
+    <string name="gates_null">&lt;no gate&gt;</string>
+    <string name="gates">Gates</string>
+    <string name="penalties_null">&lt;no penalty&gt;</string>
+    <string name="penalties">Penalties</string>
+    <string name="crews_count">Crews count</string>
+    <string name="crews_count_null">&lt;no registered&gt;</string>
+    <string name="disciplines">Disciplines</string>
+    <string name="disciplines_add_btn">Add discipline</string>
+    <string name="save">Save</string>
+
+    <!-- discipline list -->
+    <string name="discipline_name_null">&lt;unnamed&gt;</string>
+    <string name="discipline_add">Add new</string>
+
+</resources>
