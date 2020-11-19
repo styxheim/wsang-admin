@@ -16,8 +16,9 @@ object AdminAPI {
   )
 
   @JsonClass(generateAdapter = true)
-  data class AdminRequest (
-    var Credentials: Credentials = Credentials()
+  data class AdminRequest(
+    var Credentials: Credentials = Credentials(),
+    var Competition: RaceStatus? = null
   )
 
   @JsonClass(generateAdapter = true)

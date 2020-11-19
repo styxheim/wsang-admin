@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
@@ -15,6 +16,7 @@ import kotlinx.android.synthetic.main.fragment_competition.*
  * A simple [Fragment] subclass as the second destination in the navigation.
  */
 class CompetitionFragment : Fragment() {
+  private var transport: Transport? = null
 
   private val moshi: Moshi = Moshi.Builder().build()
   private val competitionJsonAdapter:
@@ -26,6 +28,8 @@ class CompetitionFragment : Fragment() {
     arguments?.getString("competition_json", null)?.let {
       competition = competitionJsonAdapter.fromJson(it)!!
     }
+
+    transport = Transport(PreferenceManager.getDefaultSharedPreferences(context)!!)
   }
 
   override fun onCreateView(
@@ -62,11 +66,31 @@ class CompetitionFragment : Fragment() {
 
   private fun setupCompetitionSaveFab() {
     competitionSave.setOnClickListener {
-      Toast.makeText(
-        context,
-        "Save stub",
-        Toast.LENGTH_SHORT
-      ).show()
+      transport?.setCompetition(
+        competition,
+        onBegin = { activity?.runOnUiThread { competitionSave.isEnabled = false } },
+        onEnd = { activity?.runOnUiThread { competitionSave.isEnabled = true } },
+        onFail = { message ->
+          activity?.runOnUiThread {
+            Toast.makeText(
+              context,
+              "Save failed: {$message}",
+              Toast.LENGTH_SHORT
+            ).show()
+          }
+        },
+        onResult = {
+          activity?.runOnUiThread {
+            activity?.runOnUiThread {
+              Toast.makeText(
+                context,
+                "Successfull save",
+                Toast.LENGTH_SHORT
+              ).show()
+            }
+          }
+        }
+      )
     }
   }
 

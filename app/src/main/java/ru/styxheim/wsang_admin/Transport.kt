@@ -10,8 +10,10 @@ import okio.BufferedSource
 import java.io.IOException
 
 class Transport(private val sharedPreferences: SharedPreferences) {
+  private val mediaType = "application/json; charset=utf8".toMediaType()
   private val serverScheme: String = "http://"
   private var callCompetitionListGet: Call? = null
+  private var callCompetitionSet: Call? = null
 
   private val httpClient = OkHttpClient()
   private val moshi: Moshi = Moshi.Builder().build()
@@ -56,6 +58,30 @@ class Transport(private val sharedPreferences: SharedPreferences) {
     })
   }
 
+  fun setCompetition(
+    competition: AdminAPI.RaceStatus,
+    onBegin: () -> Unit,
+    onEnd: () -> Unit,
+    onFail: (message: String) -> Unit,
+    onResult: () -> Unit
+  ) {
+    val serverAddress: String = sharedPreferences.getString("server_address", null) ?: return
+    val areq = AdminAPI.AdminRequest(Credentials = getCredentials(), Competition = competition)
+    val body = adminRequestJsonAdapter.toJson(areq).toString().toRequestBody(mediaType)
+    val request = Request.Builder()
+      .url("$serverScheme$serverAddress/api/admin/competition/set/${competition.CompetitionId}")
+      .post(body)
+      .build()
+
+    callCompetitionSet?.let {
+      onEnd()
+      it.cancel()
+    }
+
+    callCompetitionListGet = httpClient.newCall(request)
+    enqueue(callCompetitionListGet!!, onBegin, onEnd, onFail, { onResult() })
+  }
+
   fun getCompetitionList(
     onBegin: () -> Unit,
     onEnd: () -> Unit,
@@ -64,7 +90,6 @@ class Transport(private val sharedPreferences: SharedPreferences) {
   ) {
     val serverAddress: String = sharedPreferences.getString("server_address", null) ?: return
     val areq = AdminAPI.AdminRequest(Credentials = getCredentials())
-    val mediaType = "application/json; charset=utf8".toMediaType()
     val body = adminRequestJsonAdapter.toJson(areq).toString().toRequestBody(mediaType)
     val request = Request.Builder()
       .url("$serverScheme$serverAddress/api/admin/competition/list")
