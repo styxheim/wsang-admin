@@ -6,6 +6,7 @@ import com.squareup.moshi.Moshi
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
+import okio.BufferedSource
 import java.io.IOException
 
 class Transport(private val sharedPreferences: SharedPreferences) {
@@ -19,6 +20,42 @@ class Transport(private val sharedPreferences: SharedPreferences) {
   private val competitionListJsonAdapter:
       JsonAdapter<AdminAPI.CompetitionList> = moshi.adapter(AdminAPI.CompetitionList::class.java)
 
+  private fun getCredentials(): AdminAPI.Credentials {
+    val terminalString: String = sharedPreferences.getString("terminal_string", "")!!
+    val secureKey: String = sharedPreferences.getString("secure_key", "")!!
+
+    return AdminAPI.Credentials(TerminalString = terminalString, SecureKey = secureKey)
+  }
+
+  private fun enqueue(
+    call: Call,
+    onBegin: () -> Unit,
+    onEnd: () -> Unit,
+    onFail: (message: String) -> Unit,
+    onResult: (source: BufferedSource) -> Unit
+  ) {
+    onBegin()
+    call.enqueue(object : Callback {
+      override fun onResponse(call: Call, response: Response) {
+        onEnd()
+        when (response.code) {
+          200 -> {
+            onResult(response.body!!.source())
+          }
+          else -> {
+            onFail("response code: ${response.code} (expected 200)")
+          }
+        }
+      }
+
+      override fun onFailure(call: Call, e: IOException) {
+        if (call.isCanceled()) return
+        onEnd()
+        onFail(e.toString())
+      }
+    })
+  }
+
   fun getCompetitionList(
     onBegin: () -> Unit,
     onEnd: () -> Unit,
@@ -26,10 +63,7 @@ class Transport(private val sharedPreferences: SharedPreferences) {
     onResult: (competitionList: AdminAPI.CompetitionList) -> Unit,
   ) {
     val serverAddress: String = sharedPreferences.getString("server_address", null) ?: return
-    val terminalString: String = sharedPreferences.getString("terminal_string", null) ?: return
-    val secureKey: String = sharedPreferences.getString("secure_key", null) ?: return
-    val credentials = AdminAPI.Credentials(TerminalString = terminalString, SecureKey = secureKey)
-    val areq = AdminAPI.AdminRequest(Credentials = credentials)
+    val areq = AdminAPI.AdminRequest(Credentials = getCredentials())
     val mediaType = "application/json; charset=utf8".toMediaType()
     val body = adminRequestJsonAdapter.toJson(areq).toString().toRequestBody(mediaType)
     val request = Request.Builder()
@@ -43,28 +77,11 @@ class Transport(private val sharedPreferences: SharedPreferences) {
     }
 
     callCompetitionListGet = httpClient.newCall(request)
-    onBegin()
-    callCompetitionListGet?.enqueue(object : Callback {
-      override fun onResponse(call: Call, response: Response) {
-        onEnd()
-        when (response.code) {
-          200 -> {
-            competitionListJsonAdapter.fromJson(response.body!!.source())?.let {
-              onResult(it)
-              return;
-            }
-            onFail("Unknown error: json not parsed")
-          }
-          else -> {
-            onFail("response code: ${response.code} (expected 200)")
-          }
-        }
-      }
-
-      override fun onFailure(call: Call, e: IOException) {
-        if (call.isCanceled()) return
-        onEnd()
-        onFail(e.toString())
+    enqueue(callCompetitionListGet!!, onBegin, onEnd, onFail, { source ->
+      competitionListJsonAdapter.fromJson(source)?.let {
+        onResult(it)
+      } ?: run {
+        onFail("Unknown error: json not parsed")
       }
     })
   }
