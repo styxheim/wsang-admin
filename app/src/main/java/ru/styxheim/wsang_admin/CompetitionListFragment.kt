@@ -49,7 +49,7 @@ class CompetitionListFragment : Fragment(), SharedPreferences.OnSharedPreference
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
 
-    refreshList.setOnClickListener { _ -> this.loadCompetitionList() }
+    refreshList.setOnClickListener { this.loadCompetitionList() }
     loadCompetitionList()
   }
 
