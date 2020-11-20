@@ -1,16 +1,12 @@
 package ru.styxheim.wsang_admin
 
-import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.competition_discipline_item.view.*
 
 class CompetitionDisciplineAdapter(
   private val disciplines: MutableList<AdminAPI.Discipline>,
-  private val context: Context
 ) : RecyclerView.Adapter<CompetitionDisciplineItemHolder>() {
   private var onClickNameListener: ((id: Int) -> Unit)? = null
 
@@ -23,7 +19,6 @@ class CompetitionDisciplineAdapter(
     return CompetitionDisciplineItemHolder(
       inflater,
       parent,
-      context,
       onClickName = { id -> onClickNameListener?.invoke(id) })
   }
 
@@ -40,7 +35,6 @@ class CompetitionDisciplineAdapter(
 
 class CompetitionDisciplineItemHolder(
   inflater: LayoutInflater, parent: ViewGroup,
-  private val context: Context,
   private val onClickName: (id: Int) -> Unit
 ) :
   RecyclerView.ViewHolder(inflater.inflate(R.layout.competition_discipline_item, parent, false)) {

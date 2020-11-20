@@ -68,8 +68,7 @@ class CompetitionFragment : Fragment() {
   private fun setupDisciplineAdapter() {
     val competitionDisciplineAdapter =
       CompetitionDisciplineAdapter(
-        competition.Disciplines!!,
-        requireContext()
+        competition.Disciplines!!
       )
 
     disciplines.apply {
