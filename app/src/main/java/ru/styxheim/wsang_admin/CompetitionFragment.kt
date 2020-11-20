@@ -1,10 +1,12 @@
 package ru.styxheim.wsang_admin
 
+import android.app.AlertDialog
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.Toast
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -40,9 +42,35 @@ class CompetitionFragment : Fragment() {
     return inflater.inflate(R.layout.fragment_competition, container, false)
   }
 
+  private fun showDisciplineNameDialog(
+    competitionDisciplineAdapter: CompetitionDisciplineAdapter,
+    getDiscipline: () -> AdminAPI.Discipline,
+    setDiscipline: (discipline: AdminAPI.Discipline) -> Unit
+  ) {
+    val discipline = getDiscipline()
+    val disciplineNameEdit = EditText(requireContext())
+    val dialogBuilder = AlertDialog.Builder(requireContext()).setTitle(R.string.discipline_name)
+      .setView(disciplineNameEdit)
+
+    disciplineNameEdit.isSingleLine = true
+    disciplineNameEdit.hint = getString(R.string.set_discipline_name)
+    disciplineNameEdit.setText(discipline.Name)
+    dialogBuilder.setPositiveButton(R.string.save) { _, _ ->
+      discipline.Name = disciplineNameEdit.text.toString()
+      setDiscipline(discipline)
+      competitionDisciplineAdapter.notifyDataSetChanged()
+      saveCompetitionToBundle()
+    }
+    dialogBuilder.setNegativeButton(R.string.cancel) { _, _ -> }
+    dialogBuilder.show()
+  }
+
   private fun setupDisciplineAdapter() {
     val competitionDisciplineAdapter =
-      CompetitionDisciplineAdapter(competition.Disciplines!!, requireContext())
+      CompetitionDisciplineAdapter(
+        competition.Disciplines!!,
+        requireContext()
+      )
 
     disciplines.apply {
       layoutManager = LinearLayoutManager(activity)
@@ -50,9 +78,23 @@ class CompetitionFragment : Fragment() {
     }
 
     disciplineAdd.setOnClickListener {
-      competition.Disciplines?.add(AdminAPI.Discipline(Id = 1, Name = "1"))
-      competitionDisciplineAdapter.notifyDataSetChanged()
-      saveCompetitionToBundle()
+      showDisciplineNameDialog(competitionDisciplineAdapter,
+        getDiscipline = {
+          AdminAPI.Discipline(
+            Id = ((competition.Disciplines?.maxByOrNull { it -> it.Id })?.Id ?: 0) + 1,
+          )
+        },
+        setDiscipline = { discipline -> competition.Disciplines?.add(discipline) }
+      )
+    }
+
+    competitionDisciplineAdapter.setOnClickName { id ->
+      showDisciplineNameDialog(competitionDisciplineAdapter,
+        getDiscipline = {
+          competition.Disciplines?.find { it.Id == id }!!
+        },
+        setDiscipline = { }
+      )
     }
   }
 

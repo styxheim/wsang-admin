@@ -12,6 +12,7 @@ class CompetitionDisciplineAdapter(
   private val disciplines: MutableList<AdminAPI.Discipline>,
   private val context: Context
 ) : RecyclerView.Adapter<CompetitionDisciplineItemHolder>() {
+  private var onClickNameListener: ((id: Int) -> Unit)? = null
 
   override fun onCreateViewHolder(
     parent: ViewGroup,
@@ -19,7 +20,11 @@ class CompetitionDisciplineAdapter(
   ): CompetitionDisciplineItemHolder {
     val inflater = LayoutInflater.from(parent.context)
 
-    return CompetitionDisciplineItemHolder(inflater, parent, context)
+    return CompetitionDisciplineItemHolder(
+      inflater,
+      parent,
+      context,
+      onClickName = { id -> onClickNameListener?.invoke(id) })
   }
 
   override fun getItemCount(): Int = disciplines.size
@@ -27,11 +32,16 @@ class CompetitionDisciplineAdapter(
   override fun onBindViewHolder(holder: CompetitionDisciplineItemHolder, position: Int) {
     holder.bind(disciplines[position])
   }
+
+  fun setOnClickName(onClickName: (id: Int) -> Unit) {
+    onClickNameListener = onClickName
+  }
 }
 
 class CompetitionDisciplineItemHolder(
   inflater: LayoutInflater, parent: ViewGroup,
-  private val context: Context
+  private val context: Context,
+  private val onClickName: (id: Int) -> Unit
 ) :
   RecyclerView.ViewHolder(inflater.inflate(R.layout.competition_discipline_item, parent, false)) {
 
@@ -39,6 +49,9 @@ class CompetitionDisciplineItemHolder(
   }
 
   fun bind(discipline: AdminAPI.Discipline) {
-    itemView.disciplineName?.text = discipline.Name;
+    itemView.disciplineName?.let {
+      it.text = discipline.Name
+      it.setOnClickListener { onClickName(discipline.Id) }
+    }
   }
 }
