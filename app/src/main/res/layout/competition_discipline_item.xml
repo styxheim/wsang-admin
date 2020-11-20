@@ -13,6 +13,14 @@
         android:id="@+id/disciplineName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/discipline_name_null" />
+        android:text="@string/discipline_name_null"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:id="@+id/gates_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"/>
 
 </LinearLayout>
