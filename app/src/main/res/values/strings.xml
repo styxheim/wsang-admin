@@ -53,6 +53,7 @@
     <string name="disciplines_add_btn">Add discipline</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
 
     <!-- discipline list -->
     <string name="discipline_name_null">&lt;unnamed&gt;</string>

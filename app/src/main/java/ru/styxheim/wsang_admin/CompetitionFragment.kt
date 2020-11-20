@@ -45,7 +45,8 @@ class CompetitionFragment : Fragment() {
   private fun showDisciplineNameDialog(
     competitionDisciplineAdapter: CompetitionDisciplineAdapter,
     getDiscipline: () -> AdminAPI.Discipline,
-    setDiscipline: (discipline: AdminAPI.Discipline) -> Unit
+    setDiscipline: (discipline: AdminAPI.Discipline) -> Unit,
+    delDiscipline: ((discipline: AdminAPI.Discipline) -> Unit)? = null
   ) {
     val discipline = getDiscipline()
     val disciplineNameEdit = EditText(requireContext())
@@ -62,6 +63,13 @@ class CompetitionFragment : Fragment() {
       saveCompetitionToBundle()
     }
     dialogBuilder.setNegativeButton(R.string.cancel) { _, _ -> }
+    delDiscipline?.let {
+      dialogBuilder.setNeutralButton(R.string.delete) { _, _ ->
+        it(discipline)
+        competitionDisciplineAdapter.notifyDataSetChanged()
+        saveCompetitionToBundle()
+      }
+    }
     dialogBuilder.show()
   }
 
@@ -93,7 +101,8 @@ class CompetitionFragment : Fragment() {
         getDiscipline = {
           competition.Disciplines?.find { it.Id == id }!!
         },
-        setDiscipline = { }
+        setDiscipline = { },
+        delDiscipline = { discipline -> competition.Disciplines?.remove(discipline) }
       )
     }
     competitionDisciplineAdapter.setOnClickGate { disciplineId, gateId ->
