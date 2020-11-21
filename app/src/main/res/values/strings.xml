@@ -54,6 +54,10 @@
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
     <string name="delete">Delete</string>
+    <string name="edit_penalties">Edit penalties</string>
+    <string name="edit_gates">Edit gates list</string>
+    <string name="edit_list_hint">0, 1, 2, 3</string>
+    <string name="edit_list_invalid_format">Invalid input format, must be: 0, 1, 2, 3</string>
 
     <!-- discipline list -->
     <string name="discipline_name_null">&lt;unnamed&gt;</string>

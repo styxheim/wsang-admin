@@ -7,12 +7,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.StringRes
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import kotlinx.android.synthetic.main.fragment_competition.*
+import java.lang.NumberFormatException
 
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
@@ -156,6 +159,40 @@ class CompetitionFragment : Fragment() {
     }
   }
 
+  private fun updateListWithDialog(
+    mutableList: MutableList<Int>,
+    textView: TextView,
+    @StringRes title: Int
+  ) {
+    val editTextView = EditText(requireContext())
+    val dialogBuilder = AlertDialog.Builder(requireContext()).setTitle(title)
+      .setView(editTextView)
+
+    editTextView.isSingleLine = true
+    editTextView.hint = getString(R.string.edit_list_hint)
+    editTextView.setText(textView.text)
+
+    dialogBuilder.setPositiveButton(R.string.save) { _, _ ->
+      activity?.runOnUiThread {
+        try {
+          val list = editTextView.text.toString().split(',').map { it.trim().toInt() }
+
+          mutableList.clear()
+          mutableList.addAll(list)
+          textView.text = mutableList.joinToString()
+        } catch (e: NumberFormatException) {
+          Toast.makeText(requireContext(), R.string.edit_list_invalid_format, Toast.LENGTH_SHORT)
+            .show()
+        }
+      }
+    }
+
+    dialogBuilder.setNegativeButton(R.string.cancel) { _, _ ->
+    }
+
+    dialogBuilder.show()
+  }
+
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
     /* competition id */
@@ -169,12 +206,26 @@ class CompetitionFragment : Fragment() {
     }
 
     /* penalties */
+    penalties.setOnClickListener {
+      updateListWithDialog(
+        competition.Penalties!!,
+        penalties,
+        R.string.penalties
+      )
+    }
     penalties.text = getString(R.string.penalties_null)
     if (competition.Penalties!!.isNotEmpty()) {
       penalties.text = competition.Penalties!!.joinToString()
     }
 
     /* gates */
+    gates.setOnClickListener {
+      updateListWithDialog(
+        competition.Gates!!,
+        gates,
+        R.string.edit_gates
+      )
+    }
     gates.text = getString(R.string.gates_null)
     if (competition.Gates!!.isNotEmpty()) {
       gates.text = competition.Gates!!.joinToString()
