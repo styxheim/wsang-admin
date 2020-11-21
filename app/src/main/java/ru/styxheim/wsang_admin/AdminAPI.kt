@@ -22,6 +22,11 @@ object AdminAPI {
   )
 
   @JsonClass(generateAdapter = true)
+  open class AdminResponse(
+    val Error: Error?
+  )
+
+  @JsonClass(generateAdapter = true)
   data class Discipline (
     var Id: Int = 0,
     var Name: String = "",
@@ -44,6 +49,5 @@ object AdminAPI {
   @JsonClass(generateAdapter = true)
   data class CompetitionList (
     val Competitions: MutableList<RaceStatus> = mutableListOf(),
-    val Error : Error?
-  )
+  ) : AdminResponse(Error = null)
 }

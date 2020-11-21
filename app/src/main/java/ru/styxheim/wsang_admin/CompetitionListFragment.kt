@@ -94,11 +94,6 @@ class CompetitionListFragment : Fragment(), SharedPreferences.OnSharedPreference
   }
 
   private fun responseAdminList(response: AdminAPI.CompetitionList) {
-    response.Error?.let {
-      navigateToFail("Query rejected: ${it.Text}")
-      return
-    }
-
     compeititionList = response
 
     class OnClick : CompetitionListAdapter.OnItemSelectListenerInterface {

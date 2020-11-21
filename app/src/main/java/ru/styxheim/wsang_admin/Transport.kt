@@ -8,6 +8,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import okio.BufferedSource
 import java.io.IOException
+import kotlin.reflect.jvm.internal.impl.builtins.functions.BuiltInFictitiousFunctionClassFactory
 
 class Transport(private val sharedPreferences: SharedPreferences) {
   private val mediaType = "application/json; charset=utf8".toMediaType()
@@ -19,6 +20,7 @@ class Transport(private val sharedPreferences: SharedPreferences) {
   private val moshi: Moshi = Moshi.Builder().build()
   private val adminRequestJsonAdapter:
       JsonAdapter<AdminAPI.AdminRequest> = moshi.adapter(AdminAPI.AdminRequest::class.java)
+  private val adminResponseJsonAdapter = moshi.adapter(AdminAPI.AdminResponse::class.java)
   private val competitionListJsonAdapter:
       JsonAdapter<AdminAPI.CompetitionList> = moshi.adapter(AdminAPI.CompetitionList::class.java)
 
@@ -79,7 +81,13 @@ class Transport(private val sharedPreferences: SharedPreferences) {
     }
 
     callCompetitionListGet = httpClient.newCall(request)
-    enqueue(callCompetitionListGet!!, onBegin, onEnd, onFail, { onResult() })
+    enqueue(callCompetitionListGet!!, onBegin, onEnd, onFail, { source ->
+      adminResponseJsonAdapter.fromJson(source)?.let {
+        it.Error?.let { error -> onFail(error.Text) } ?: run {
+          onResult()
+        }
+      } ?: run { onFail("Unknown error: json not parsed") }
+    })
   }
 
   fun getCompetitionList(
@@ -104,7 +112,9 @@ class Transport(private val sharedPreferences: SharedPreferences) {
     callCompetitionListGet = httpClient.newCall(request)
     enqueue(callCompetitionListGet!!, onBegin, onEnd, onFail, { source ->
       competitionListJsonAdapter.fromJson(source)?.let {
-        onResult(it)
+        (it as AdminAPI.AdminResponse).Error?.let { error -> onFail(error.Text) } ?: run {
+          onResult(it)
+        }
       } ?: run {
         onFail("Unknown error: json not parsed")
       }
