@@ -80,8 +80,8 @@ class Transport(private val sharedPreferences: SharedPreferences) {
       it.cancel()
     }
 
-    callCompetitionListGet = httpClient.newCall(request)
-    enqueue(callCompetitionListGet!!, onBegin, onEnd, onFail, { source ->
+    callCompetitionSet = httpClient.newCall(request)
+    enqueue(callCompetitionSet!!, onBegin, onEnd, onFail, { source ->
       adminResponseJsonAdapter.fromJson(source)?.let {
         it.Error?.let { error -> onFail(error.Text) } ?: run {
           onResult()
