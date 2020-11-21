@@ -27,6 +27,8 @@ class CompetitionFragment : Fragment() {
   private val competitionJsonAdapter:
       JsonAdapter<AdminAPI.RaceStatus> = moshi.adapter(AdminAPI.RaceStatus::class.java)
   private var competition: AdminAPI.RaceStatus = AdminAPI.RaceStatus(SyncPoint = 0)
+  private var competitionDisciplineAdapter: CompetitionDisciplineAdapter? = null
+
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -46,7 +48,6 @@ class CompetitionFragment : Fragment() {
   }
 
   private fun showDisciplineNameDialog(
-    competitionDisciplineAdapter: CompetitionDisciplineAdapter,
     getDiscipline: () -> AdminAPI.Discipline,
     setDiscipline: (discipline: AdminAPI.Discipline) -> Unit,
     delDiscipline: ((discipline: AdminAPI.Discipline) -> Unit)? = null
@@ -62,14 +63,14 @@ class CompetitionFragment : Fragment() {
     dialogBuilder.setPositiveButton(R.string.save) { _, _ ->
       discipline.Name = disciplineNameEdit.text.toString()
       setDiscipline(discipline)
-      competitionDisciplineAdapter.notifyDataSetChanged()
+      competitionDisciplineAdapter?.notifyDataSetChanged()
       saveCompetitionToBundle()
     }
     dialogBuilder.setNegativeButton(R.string.cancel) { _, _ -> }
     delDiscipline?.let {
       dialogBuilder.setNeutralButton(R.string.delete) { _, _ ->
         it(discipline)
-        competitionDisciplineAdapter.notifyDataSetChanged()
+        competitionDisciplineAdapter?.notifyDataSetChanged()
         saveCompetitionToBundle()
       }
     }
@@ -77,7 +78,7 @@ class CompetitionFragment : Fragment() {
   }
 
   private fun setupDisciplineAdapter() {
-    val competitionDisciplineAdapter =
+    competitionDisciplineAdapter =
       CompetitionDisciplineAdapter(
         competition.Disciplines!!,
         competition.Gates!!
@@ -89,7 +90,7 @@ class CompetitionFragment : Fragment() {
     }
 
     disciplineAdd.setOnClickListener {
-      showDisciplineNameDialog(competitionDisciplineAdapter,
+      showDisciplineNameDialog(
         getDiscipline = {
           AdminAPI.Discipline(
             Id = ((competition.Disciplines?.maxByOrNull { it -> it.Id })?.Id ?: 0) + 1,
@@ -99,8 +100,8 @@ class CompetitionFragment : Fragment() {
       )
     }
 
-    competitionDisciplineAdapter.setOnClickName { id ->
-      showDisciplineNameDialog(competitionDisciplineAdapter,
+    competitionDisciplineAdapter!!.setOnClickName { id ->
+      showDisciplineNameDialog(
         getDiscipline = {
           competition.Disciplines?.find { it.Id == id }!!
         },
@@ -108,7 +109,7 @@ class CompetitionFragment : Fragment() {
         delDiscipline = { discipline -> competition.Disciplines?.remove(discipline) }
       )
     }
-    competitionDisciplineAdapter.setOnClickGate { disciplineId, gateId ->
+    competitionDisciplineAdapter!!.setOnClickGate { disciplineId, gateId ->
       competition.Disciplines?.find { discipline -> discipline.Id == disciplineId }
         ?.let { discipline ->
           discipline.Gates?.find { it == gateId }?.let {
@@ -116,7 +117,7 @@ class CompetitionFragment : Fragment() {
           } ?: run {
             discipline.Gates.add(gateId)
           }
-          competitionDisciplineAdapter.notifyDataSetChanged()
+          competitionDisciplineAdapter?.notifyDataSetChanged()
         }
     }
   }
@@ -180,6 +181,7 @@ class CompetitionFragment : Fragment() {
           mutableList.clear()
           mutableList.addAll(list)
           textView.text = mutableList.joinToString()
+          competitionDisciplineAdapter?.notifyDataSetChanged()
         } catch (e: NumberFormatException) {
           Toast.makeText(requireContext(), R.string.edit_list_invalid_format, Toast.LENGTH_SHORT)
             .show()
