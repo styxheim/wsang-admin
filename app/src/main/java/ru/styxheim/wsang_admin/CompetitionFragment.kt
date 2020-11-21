@@ -209,26 +209,30 @@ class CompetitionFragment : Fragment() {
     }
 
     /* penalties */
-    penalties.setOnClickListener {
+    val penaltiesOnClick = {
       updateListWithDialog(
         competition.Penalties!!,
         penalties,
         R.string.penalties
       )
     }
+    penalties.setOnClickListener { penaltiesOnClick() }
+    penalties_plate.setOnClickListener { penaltiesOnClick() }
     penalties.text = getString(R.string.penalties_null)
     if (competition.Penalties!!.isNotEmpty()) {
       penalties.text = competition.Penalties!!.joinToString()
     }
 
     /* gates */
-    gates.setOnClickListener {
+    val gatesOnClick = {
       updateListWithDialog(
         competition.Gates!!,
         gates,
         R.string.edit_gates
       )
     }
+    gates.setOnClickListener { gatesOnClick() }
+    gates_plate.setOnClickListener { gatesOnClick() }
     gates.text = getString(R.string.gates_null)
     if (competition.Gates!!.isNotEmpty()) {
       gates.text = competition.Gates!!.joinToString()

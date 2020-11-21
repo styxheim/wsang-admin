@@ -65,6 +65,7 @@ class CompetitionDisciplineItemHolder(
       it.text = discipline.Name
       it.setOnClickListener { onClickName(discipline.Id) }
     }
+    itemView.discipline_plate?.setOnClickListener { onClickName(discipline.Id) }
     itemView.gates_list?.let { gateListView ->
       gateListView.removeAllViews()
       competitionGates.forEach { competitionGateNo ->

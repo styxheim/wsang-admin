@@ -109,6 +109,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/penalties_plate"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="?attr/selectableItemBackground"
@@ -145,6 +146,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/gates_plate"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="?attr/selectableItemBackground"
