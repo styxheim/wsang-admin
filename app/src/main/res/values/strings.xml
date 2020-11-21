@@ -40,6 +40,9 @@
     <string name="fail_reason_template">Unknown reason</string>
     <string name="fail_retry">Retry</string>
 
+    <!-- competition list fragment -->
+    <string name="competition_add">Start new competition</string>
+
     <!-- competition fragment -->
     <string name="competition_id">Id</string>
     <string name="timestamp">Creation time</string>

@@ -17,6 +17,7 @@ import kotlinx.android.synthetic.main.fragment_competition_list.*
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
 class CompetitionListFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener {
+  private var compeititionList: AdminAPI.CompetitionList? = null
   private var transport: Transport? = null
   private var sharedPreferences: SharedPreferences? = null
   private val moshi: Moshi = Moshi.Builder().build()
@@ -49,6 +50,18 @@ class CompetitionListFragment : Fragment(), SharedPreferences.OnSharedPreference
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
 
+    competitionAddView.setOnClickListener {
+      val competitionId =
+        ((compeititionList?.Competitions?.maxByOrNull { it.CompetitionId })?.CompetitionId
+          ?: 0L) + 1
+      val competition =
+        AdminAPI.RaceStatus(
+          CompetitionId = competitionId,
+          TimeStamp = System.currentTimeMillis() / 1000,
+          SyncPoint = 0
+        )
+      navToCompetition(competition)
+    }
     refreshList.setOnClickListener { this.loadCompetitionList() }
     loadCompetitionList()
   }
@@ -70,21 +83,27 @@ class CompetitionListFragment : Fragment(), SharedPreferences.OnSharedPreference
     navigateToFail("Connection error: $message")
   }
 
+  private fun navToCompetition(competition: AdminAPI.RaceStatus) {
+    val args = Bundle()
+
+    args.putString("competition_json", competitionJsonAdapter.toJson(competition))
+    findNavController().navigate(
+      R.id.action_ComptitionListFragment_to_CompetitionFragment,
+      args
+    )
+  }
+
   private fun responseAdminList(response: AdminAPI.CompetitionList) {
     response.Error?.let {
       navigateToFail("Query rejected: ${it.Text}")
       return
     }
 
+    compeititionList = response
+
     class OnClick : CompetitionListAdapter.OnItemSelectListenerInterface {
       override fun onItemSelect(competition: AdminAPI.RaceStatus) {
-        val args = Bundle()
-
-        args.putString("competition_json", competitionJsonAdapter.toJson(competition))
-        findNavController().navigate(
-          R.id.action_ComptitionListFragment_to_CompetitionFragment,
-          args
-        )
+        navToCompetition(competition)
       }
     }
 
