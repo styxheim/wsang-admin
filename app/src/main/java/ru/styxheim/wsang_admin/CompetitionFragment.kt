@@ -112,7 +112,7 @@ class CompetitionFragment : Fragment() {
     competitionDisciplineAdapter!!.setOnClickGate { disciplineId, gateId ->
       competition.Disciplines?.find { discipline -> discipline.Id == disciplineId }
         ?.let { discipline ->
-          discipline.Gates?.find { it == gateId }?.let {
+          discipline.Gates.find { it == gateId }?.let {
             discipline.Gates.remove(gateId)
           } ?: run {
             discipline.Gates.add(gateId)
