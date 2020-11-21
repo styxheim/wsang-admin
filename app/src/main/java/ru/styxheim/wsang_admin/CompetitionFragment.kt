@@ -182,6 +182,7 @@ class CompetitionFragment : Fragment() {
           mutableList.addAll(list)
           textView.text = mutableList.joinToString()
           competitionDisciplineAdapter?.notifyDataSetChanged()
+          saveCompetitionToBundle()
         } catch (e: NumberFormatException) {
           Toast.makeText(requireContext(), R.string.edit_list_invalid_format, Toast.LENGTH_SHORT)
             .show()
