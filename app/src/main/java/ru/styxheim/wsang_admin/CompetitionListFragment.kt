@@ -17,12 +17,13 @@ import kotlinx.android.synthetic.main.fragment_competition_list.*
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
 class CompetitionListFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener {
-  private var compeititionList: AdminAPI.CompetitionList? = null
+  private var competitionList: MutableList<AdminAPI.RaceStatus> = mutableListOf()
   private var transport: Transport? = null
   private var sharedPreferences: SharedPreferences? = null
   private val moshi: Moshi = Moshi.Builder().build()
   private val competitionJsonAdapter:
       JsonAdapter<AdminAPI.RaceStatus> = moshi.adapter(AdminAPI.RaceStatus::class.java)
+  private var competitionListAdapter: CompetitionListAdapter? = null
 
   override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
     when (key) {
@@ -52,8 +53,7 @@ class CompetitionListFragment : Fragment(), SharedPreferences.OnSharedPreference
 
     competitionAddView.setOnClickListener {
       val competitionId =
-        ((compeititionList?.Competitions?.maxByOrNull { it.CompetitionId })?.CompetitionId
-          ?: 0L) + 1
+        ((competitionList.maxByOrNull { it.CompetitionId })?.CompetitionId ?: 0L) + 1
       val competition =
         AdminAPI.RaceStatus(
           CompetitionId = competitionId,
@@ -63,6 +63,23 @@ class CompetitionListFragment : Fragment(), SharedPreferences.OnSharedPreference
       navToCompetition(competition)
     }
     refreshList.setOnClickListener { this.loadCompetitionList() }
+
+
+    class OnClick : CompetitionListAdapter.OnItemSelectListenerInterface {
+      override fun onItemSelect(competition: AdminAPI.RaceStatus) {
+        navToCompetition(competition)
+      }
+    }
+
+    competitionListAdapter = CompetitionListAdapter(competitionList, requireContext())
+
+    competitionListAdapter?.onItemSelectListener = OnClick()
+    competitionListView.apply {
+      layoutManager = LinearLayoutManager(activity)
+      adapter = competitionListAdapter
+    }
+
+
     loadCompetitionList()
   }
 
@@ -94,21 +111,9 @@ class CompetitionListFragment : Fragment(), SharedPreferences.OnSharedPreference
   }
 
   private fun responseAdminList(response: AdminAPI.CompetitionList) {
-    compeititionList = response
-
-    class OnClick : CompetitionListAdapter.OnItemSelectListenerInterface {
-      override fun onItemSelect(competition: AdminAPI.RaceStatus) {
-        navToCompetition(competition)
-      }
-    }
-
-    val competitionListAdapter = CompetitionListAdapter(response.Competitions, requireContext())
-
-    competitionListAdapter.onItemSelectListener = OnClick()
-    competitionList.apply {
-      layoutManager = LinearLayoutManager(activity)
-      adapter = competitionListAdapter
-    }
+    competitionList.clear()
+    competitionList.addAll(response.Competitions)
+    competitionListAdapter?.notifyDataSetChanged()
   }
 
   private fun loadCompetitionList() {

@@ -22,7 +22,7 @@
             android:text="@string/competition_add" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/competitionList"
+            android:id="@+id/competitionListView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginStart="1dp"
