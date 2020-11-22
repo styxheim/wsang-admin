@@ -17,6 +17,7 @@ import kotlinx.android.synthetic.main.fragment_competition_list.*
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
 class CompetitionListFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener {
+  private var competitionLoaded: Boolean = false
   private var competitionList: MutableList<AdminAPI.RaceStatus> = mutableListOf()
   private var transport: Transport? = null
   private var sharedPreferences: SharedPreferences? = null
@@ -51,6 +52,7 @@ class CompetitionListFragment : Fragment(), SharedPreferences.OnSharedPreference
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
 
+    competitionAddView.visibility = if (competitionLoaded) View.VISIBLE else View.INVISIBLE
     competitionAddView.setOnClickListener {
       val competitionId =
         ((competitionList.maxByOrNull { it.CompetitionId })?.CompetitionId ?: 0L) + 1
@@ -111,6 +113,8 @@ class CompetitionListFragment : Fragment(), SharedPreferences.OnSharedPreference
   }
 
   private fun responseAdminList(response: AdminAPI.CompetitionList) {
+    competitionAddView.visibility = View.VISIBLE
+    competitionLoaded = true
     competitionList.clear()
     competitionList.addAll(response.Competitions)
     competitionListAdapter?.notifyDataSetChanged()
