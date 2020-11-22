@@ -2,11 +2,8 @@ package ru.styxheim.wsang_admin
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
-import androidx.core.view.setPadding
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.competition_discipline_item.view.*
 import kotlinx.android.synthetic.main.discipline_gate_item.view.*
