@@ -1,7 +1,6 @@
 package ru.styxheim.wsang_admin
 
 import android.content.SharedPreferences
-import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
@@ -17,11 +16,9 @@ class Transport(private val sharedPreferences: SharedPreferences) {
 
   private val httpClient = OkHttpClient()
   private val moshi: Moshi = Moshi.Builder().build()
-  private val adminRequestJsonAdapter:
-      JsonAdapter<AdminAPI.AdminRequest> = moshi.adapter(AdminAPI.AdminRequest::class.java)
+  private val adminRequestJsonAdapter = moshi.adapter(AdminAPI.AdminRequest::class.java)
   private val adminResponseJsonAdapter = moshi.adapter(AdminAPI.AdminResponse::class.java)
-  private val competitionListJsonAdapter:
-      JsonAdapter<AdminAPI.CompetitionList> = moshi.adapter(AdminAPI.CompetitionList::class.java)
+  private val competitionListJsonAdapter = moshi.adapter(AdminAPI.CompetitionList::class.java)
 
   private fun getCredentials(): AdminAPI.Credentials {
     val terminalString: String = sharedPreferences.getString("terminal_string", "")!!
@@ -30,12 +27,13 @@ class Transport(private val sharedPreferences: SharedPreferences) {
     return AdminAPI.Credentials(TerminalString = terminalString, SecureKey = secureKey)
   }
 
-  private fun enqueue(
+  private fun <T : AdminAPI.AdminResponse> enqueue(
     call: Call,
+    responseJsonAdapter: (BufferedSource) -> T?,
     onBegin: () -> Unit,
     onEnd: () -> Unit,
     onFail: (message: String) -> Unit,
-    onResult: (source: BufferedSource) -> Unit
+    onResult: (adminResponse: T) -> Unit
   ) {
     onBegin()
     call.enqueue(object : Callback {
@@ -43,7 +41,15 @@ class Transport(private val sharedPreferences: SharedPreferences) {
         onEnd()
         when (response.code) {
           200 -> {
-            onResult(response.body!!.source())
+            responseJsonAdapter(response.body!!.source())?.let {
+              (it as AdminAPI.AdminResponse).Error?.let { error ->
+                onFail(error.Text)
+              } ?: run {
+                onResult(it)
+              }
+            } ?: run {
+              onFail("received json not parsed: unknown error")
+            }
           }
           else -> {
             onFail("response code: ${response.code} (expected 200)")
@@ -80,13 +86,14 @@ class Transport(private val sharedPreferences: SharedPreferences) {
     }
 
     callCompetitionSet = httpClient.newCall(request)
-    enqueue(callCompetitionSet!!, onBegin, onEnd, onFail, { source ->
-      adminResponseJsonAdapter.fromJson(source)?.let {
-        it.Error?.let { error -> onFail(error.Text) } ?: run {
-          onResult()
-        }
-      } ?: run { onFail("Unknown error: json not parsed") }
-    })
+    enqueue(
+      callCompetitionSet!!,
+      { source -> adminResponseJsonAdapter.fromJson(source) },
+      onBegin,
+      onEnd,
+      onFail,
+      { onResult() }
+    )
   }
 
   fun getCompetitionList(
@@ -109,14 +116,13 @@ class Transport(private val sharedPreferences: SharedPreferences) {
     }
 
     callCompetitionListGet = httpClient.newCall(request)
-    enqueue(callCompetitionListGet!!, onBegin, onEnd, onFail, { source ->
-      competitionListJsonAdapter.fromJson(source)?.let {
-        (it as AdminAPI.AdminResponse).Error?.let { error -> onFail(error.Text) } ?: run {
-          onResult(it)
-        }
-      } ?: run {
-        onFail("Unknown error: json not parsed")
-      }
-    })
+    enqueue(
+      callCompetitionListGet!!,
+      { source -> competitionListJsonAdapter.fromJson(source) },
+      onBegin,
+      onEnd,
+      onFail,
+      onResult
+    )
   }
 }
