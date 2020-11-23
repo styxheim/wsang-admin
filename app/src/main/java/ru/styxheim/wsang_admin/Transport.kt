@@ -27,14 +27,29 @@ class Transport(private val sharedPreferences: SharedPreferences) {
     return AdminAPI.Credentials(TerminalString = terminalString, SecureKey = secureKey)
   }
 
-  private fun <T : AdminAPI.AdminResponse> enqueue(
-    call: Call,
+  private fun <T : AdminAPI.AdminResponse, TReq : AdminAPI.AdminRequest> enqueue(
+    previousCall: Call?,
+    httpResource: String,
+    apiRequest: TReq,
     responseJsonAdapter: (BufferedSource) -> T?,
     onBegin: () -> Unit,
     onEnd: () -> Unit,
     onFail: (message: String) -> Unit,
     onResult: (adminResponse: T) -> Unit
-  ) {
+  ): Call? {
+    val serverAddress: String = sharedPreferences.getString("server_address", null) ?: return null
+    val body = adminRequestJsonAdapter.toJson(apiRequest).toString().toRequestBody(mediaType)
+    val httpRequest = Request.Builder()
+      .url("${serverScheme}${serverAddress}${httpResource}")
+      .post(body)
+      .build()
+    val call = httpClient.newCall(httpRequest)
+
+    previousCall?.let {
+      onEnd()
+      it.cancel()
+    }
+
     onBegin()
     call.enqueue(object : Callback {
       override fun onResponse(call: Call, response: Response) {
@@ -63,6 +78,7 @@ class Transport(private val sharedPreferences: SharedPreferences) {
         onFail(e.toString())
       }
     })
+    return call
   }
 
   fun setCompetition(
@@ -72,22 +88,12 @@ class Transport(private val sharedPreferences: SharedPreferences) {
     onFail: (message: String) -> Unit,
     onResult: () -> Unit
   ) {
-    val serverAddress: String = sharedPreferences.getString("server_address", null) ?: return
     val areq = AdminAPI.AdminRequest(Credentials = getCredentials(), Competition = competition)
-    val body = adminRequestJsonAdapter.toJson(areq).toString().toRequestBody(mediaType)
-    val request = Request.Builder()
-      .url("$serverScheme$serverAddress/api/admin/competition/set/${competition.CompetitionId}")
-      .post(body)
-      .build()
 
-    callCompetitionSet?.let {
-      onEnd()
-      it.cancel()
-    }
-
-    callCompetitionSet = httpClient.newCall(request)
-    enqueue(
-      callCompetitionSet!!,
+    callCompetitionSet = enqueue(
+      callCompetitionSet,
+      "/api/admin/competition/set/${competition.CompetitionId}",
+      areq,
       { source -> adminResponseJsonAdapter.fromJson(source) },
       onBegin,
       onEnd,
@@ -102,22 +108,12 @@ class Transport(private val sharedPreferences: SharedPreferences) {
     onFail: (message: String) -> Unit,
     onResult: (competitionList: AdminAPI.CompetitionList) -> Unit,
   ) {
-    val serverAddress: String = sharedPreferences.getString("server_address", null) ?: return
     val areq = AdminAPI.AdminRequest(Credentials = getCredentials())
-    val body = adminRequestJsonAdapter.toJson(areq).toString().toRequestBody(mediaType)
-    val request = Request.Builder()
-      .url("$serverScheme$serverAddress/api/admin/competition/list")
-      .post(body)
-      .build()
 
-    callCompetitionListGet?.let {
-      onEnd()
-      it.cancel()
-    }
-
-    callCompetitionListGet = httpClient.newCall(request)
-    enqueue(
-      callCompetitionListGet!!,
+    callCompetitionListGet = enqueue(
+      callCompetitionListGet,
+      "/api/admin/competition/list",
+      areq,
       { source -> competitionListJsonAdapter.fromJson(source) },
       onBegin,
       onEnd,
