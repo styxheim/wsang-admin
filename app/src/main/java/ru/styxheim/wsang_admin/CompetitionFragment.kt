@@ -171,7 +171,7 @@ class CompetitionFragment : Fragment() {
 
     editTextView.isSingleLine = true
     editTextView.hint = getString(R.string.edit_list_hint)
-    editTextView.setText(textView.text)
+    editTextView.setText(mutableList.joinToString())
 
     dialogBuilder.setPositiveButton(R.string.save) { _, _ ->
       activity?.runOnUiThread {
