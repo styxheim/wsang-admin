@@ -14,13 +14,14 @@ import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
-import kotlinx.android.synthetic.main.fragment_competition.*
+import ru.styxheim.wsang_admin.databinding.FragmentCompetitionBinding
 import java.lang.NumberFormatException
 
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
  */
 class CompetitionFragment : Fragment() {
+  private var binding: FragmentCompetitionBinding? = null
   private var transport: Transport? = null
 
   private val moshi: Moshi = Moshi.Builder().build()
@@ -43,8 +44,13 @@ class CompetitionFragment : Fragment() {
     inflater: LayoutInflater, container: ViewGroup?,
     savedInstanceState: Bundle?
   ): View? {
-    // Inflate the layout for this fragment
-    return inflater.inflate(R.layout.fragment_competition, container, false)
+    binding = FragmentCompetitionBinding.inflate(inflater, container, false)
+    return binding?.root
+  }
+
+  override fun onDestroyView() {
+    super.onDestroyView()
+    binding = null
   }
 
   private fun showDisciplineNameDialog(
@@ -84,12 +90,12 @@ class CompetitionFragment : Fragment() {
         competition.Gates!!
       )
 
-    disciplines.apply {
+    binding?.disciplines?.apply {
       layoutManager = LinearLayoutManager(activity)
       adapter = competitionDisciplineAdapter
     }
 
-    disciplineAdd.setOnClickListener {
+    binding?.disciplineAdd?.setOnClickListener {
       showDisciplineNameDialog(
         getDiscipline = {
           AdminAPI.Discipline(
@@ -131,11 +137,11 @@ class CompetitionFragment : Fragment() {
   }
 
   private fun setupCompetitionSaveFab() {
-    competitionSave.setOnClickListener {
+    binding!!.competitionSave.setOnClickListener {
       transport?.setCompetition(
         competition,
-        onBegin = { activity?.runOnUiThread { competitionSave.isEnabled = false } },
-        onEnd = { activity?.runOnUiThread { competitionSave.isEnabled = true } },
+        onBegin = { activity?.runOnUiThread { binding!!.competitionSave.isEnabled = false } },
+        onEnd = { activity?.runOnUiThread { binding!!.competitionSave.isEnabled = true } },
         onFail = { message ->
           activity?.runOnUiThread {
             Toast.makeText(
@@ -199,43 +205,43 @@ class CompetitionFragment : Fragment() {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
     /* competition id */
-    competition_id.text = competition.CompetitionId.toString()
+    binding!!.competitionId.text = competition.CompetitionId.toString()
     /* timestamp */
-    timestamp.text = competition.TimeStamp.toString()
+    binding!!.competitionId.text = competition.TimeStamp.toString()
     /* crews count */
-    crews_count.text = getString(R.string.crews_count_null)
+    binding!!.crewsCount.text = getString(R.string.crews_count_null)
     competition.Crews?.let {
-      crews_count.text = it.size.toString()
+      binding?.crewsCount?.text = it.size.toString()
     }
 
     /* penalties */
     val penaltiesOnClick = {
       updateListWithDialog(
         competition.Penalties!!,
-        penalties,
+        binding!!.penalties,
         R.string.penalties
       )
     }
-    penalties.setOnClickListener { penaltiesOnClick() }
-    penalties_plate.setOnClickListener { penaltiesOnClick() }
-    penalties.text = getString(R.string.penalties_null)
+    binding!!.penalties.setOnClickListener { penaltiesOnClick() }
+    binding!!.penaltiesPlate.setOnClickListener { penaltiesOnClick() }
+    binding!!.penalties.text = getString(R.string.penalties_null)
     if (competition.Penalties!!.isNotEmpty()) {
-      penalties.text = competition.Penalties!!.joinToString()
+      binding!!.penalties.text = competition.Penalties!!.joinToString()
     }
 
     /* gates */
     val gatesOnClick = {
       updateListWithDialog(
         competition.Gates!!,
-        gates,
+        binding!!.gates,
         R.string.edit_gates
       )
     }
-    gates.setOnClickListener { gatesOnClick() }
-    gates_plate.setOnClickListener { gatesOnClick() }
-    gates.text = getString(R.string.gates_null)
+    binding!!.gates.setOnClickListener { gatesOnClick() }
+    binding!!.gatesPlate.setOnClickListener { gatesOnClick() }
+    binding!!.gates.text = getString(R.string.gates_null)
     if (competition.Gates!!.isNotEmpty()) {
-      gates.text = competition.Gates!!.joinToString()
+      binding!!.gates.text = competition.Gates!!.joinToString()
     }
 
     setupDisciplineAdapter()

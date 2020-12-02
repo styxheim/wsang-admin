@@ -5,8 +5,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.competition_discipline_item.view.*
-import kotlinx.android.synthetic.main.discipline_gate_item.view.*
+import ru.styxheim.wsang_admin.databinding.CompetitionDisciplineItemBinding
+import ru.styxheim.wsang_admin.databinding.DisciplineGateItemBinding
 
 class CompetitionDisciplineAdapter(
   private val disciplines: MutableList<AdminAPI.Discipline>,
@@ -20,10 +20,10 @@ class CompetitionDisciplineAdapter(
     viewType: Int
   ): CompetitionDisciplineItemHolder {
     val inflater = LayoutInflater.from(parent.context)
+    val holderBinding = CompetitionDisciplineItemBinding.inflate(inflater, parent, false)
 
     return CompetitionDisciplineItemHolder(
-      inflater,
-      parent,
+      holderBinding,
       onClickName = { id -> onClickNameListener?.invoke(id) },
       onClickGate = { disciplineId, gateId ->
         onClickGateListener?.invoke(disciplineId, gateId)
@@ -47,40 +47,33 @@ class CompetitionDisciplineAdapter(
 }
 
 class CompetitionDisciplineItemHolder(
-  inflater: LayoutInflater, parent: ViewGroup,
+  private val binding: CompetitionDisciplineItemBinding,
   private val onClickName: (id: Int) -> Unit,
   private val onClickGate: (disciplineId: Int, gateId: Int) -> Unit
-) :
-  RecyclerView.ViewHolder(inflater.inflate(R.layout.competition_discipline_item, parent, false)) {
-
-  init {
-  }
+) : RecyclerView.ViewHolder(binding.root) {
 
   @SuppressLint("InflateParams")
   fun bind(competitionGates: List<Int>, discipline: AdminAPI.Discipline) {
-    itemView.disciplineName?.let {
-      it.text = discipline.Name
-      it.setOnClickListener { onClickName(discipline.Id) }
-    }
-    itemView.discipline_plate?.setOnClickListener { onClickName(discipline.Id) }
-    itemView.gates_list?.let { gateListView ->
-      gateListView.removeAllViews()
-      competitionGates.forEach { competitionGateNo ->
-        val inflater = LayoutInflater.from(itemView.context)
-        val view = inflater.inflate(R.layout.discipline_gate_item, null) as ViewGroup
-        var gateView: TextView? = null
+    binding.disciplineName.text = discipline.Name
+    binding.disciplineName.setOnClickListener { onClickName(discipline.Id) }
+    binding.disciplinePlate.setOnClickListener { onClickName(discipline.Id) }
+    binding.gatesList.removeAllViews()
+    competitionGates.forEach { competitionGateNo ->
+      val inflater = LayoutInflater.from(itemView.context)
+      val view_binding = DisciplineGateItemBinding.inflate(inflater, null, false)
+      var gateView: TextView? = null
 
-        discipline.Gates.find { disciplineGateNo -> disciplineGateNo == competitionGateNo }?.let {
-          gateView = view.gate_selected
-        } ?: run {
-          gateView = view.gate_unselected
-        }
-
-        (gateView?.parent as ViewGroup).removeView(gateView)
-        gateView?.text = competitionGateNo.toString()
-        gateView?.setOnClickListener { onClickGate(discipline.Id, competitionGateNo) }
-        gateListView.addView(gateView)
+      /* TODO: replace to style instead two buttons */
+      discipline.Gates.find { disciplineGateNo -> disciplineGateNo == competitionGateNo }?.let {
+        gateView = view_binding.gateSelected
+      } ?: run {
+        gateView = view_binding.gateUnselected
       }
+
+      (gateView?.parent as ViewGroup).removeView(gateView)
+      gateView?.text = competitionGateNo.toString()
+      gateView?.setOnClickListener { onClickGate(discipline.Id, competitionGateNo) }
+      binding.gatesList.addView(gateView)
     }
   }
 }

@@ -11,12 +11,13 @@ import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
-import kotlinx.android.synthetic.main.fragment_competition_list.*
+import ru.styxheim.wsang_admin.databinding.FragmentCompetitionListBinding
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
 class CompetitionListFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListener {
+  private var binding: FragmentCompetitionListBinding? = null
   private var competitionLoaded: Boolean = false
   private var competitionList: MutableList<AdminAPI.RaceStatus> = mutableListOf()
   private var transport: Transport? = null
@@ -45,15 +46,16 @@ class CompetitionListFragment : Fragment(), SharedPreferences.OnSharedPreference
     inflater: LayoutInflater, container: ViewGroup?,
     savedInstanceState: Bundle?
   ): View? {
-    // Inflate the layout for this fragment
-    return inflater.inflate(R.layout.fragment_competition_list, container, false)
+    binding = FragmentCompetitionListBinding.inflate(inflater, container, false)
+    return binding?.root
   }
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
 
-    competitionAddView.visibility = if (competitionLoaded) View.VISIBLE else View.INVISIBLE
-    competitionAddView.setOnClickListener {
+    binding!!.competitionAddView.visibility =
+      if (competitionLoaded) View.VISIBLE else View.INVISIBLE
+    binding!!.competitionAddView.setOnClickListener {
       val competitionId =
         ((competitionList.maxByOrNull { it.CompetitionId })?.CompetitionId ?: 0L) + 1
       val competition =
@@ -64,7 +66,7 @@ class CompetitionListFragment : Fragment(), SharedPreferences.OnSharedPreference
         )
       navToCompetition(competition)
     }
-    refreshList.setOnClickListener { this.loadCompetitionList() }
+    binding!!.refreshList.setOnClickListener { this.loadCompetitionList() }
 
 
     class OnClick : CompetitionListAdapter.OnItemSelectListenerInterface {
@@ -76,7 +78,7 @@ class CompetitionListFragment : Fragment(), SharedPreferences.OnSharedPreference
     competitionListAdapter = CompetitionListAdapter(competitionList, requireContext())
 
     competitionListAdapter?.onItemSelectListener = OnClick()
-    competitionListView.apply {
+    binding!!.competitionListView.apply {
       layoutManager = LinearLayoutManager(activity)
       adapter = competitionListAdapter
     }
@@ -88,6 +90,7 @@ class CompetitionListFragment : Fragment(), SharedPreferences.OnSharedPreference
   override fun onDestroyView() {
     sharedPreferences?.unregisterOnSharedPreferenceChangeListener(this)
     super.onDestroyView()
+    binding = null
   }
 
   private fun navigateToFail(message: String) {
@@ -113,7 +116,7 @@ class CompetitionListFragment : Fragment(), SharedPreferences.OnSharedPreference
   }
 
   private fun responseAdminList(response: AdminAPI.CompetitionList) {
-    competitionAddView.visibility = View.VISIBLE
+    binding!!.competitionAddView.visibility = View.VISIBLE
     competitionLoaded = true
     competitionList.clear()
     competitionList.addAll(response.Competitions)
