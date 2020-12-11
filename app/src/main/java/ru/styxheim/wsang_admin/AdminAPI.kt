@@ -50,4 +50,21 @@ object AdminAPI {
   data class CompetitionList (
     val Competitions: MutableList<RaceStatus> = mutableListOf(),
   ) : AdminResponse(Error = null)
-}
+
+  @JsonClass(generateAdapter = true)
+  data class TerminalActivity(
+    val LastActivity: Long
+  )
+
+  @JsonClass(generateAdapter = true)
+  data class TerminalStatusShort(
+    val TimeStamp: Long,
+    val TerminalString: String,
+    val Activity: TerminalActivity
+  )
+
+  @JsonClass(generateAdapter = true)
+  data class TerminalList(
+    val TerminalList: List<TerminalStatusShort> = mutableListOf()
+  ) : AdminResponse(Error = null)
+ }
