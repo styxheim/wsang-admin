@@ -13,12 +13,14 @@ class Transport(private val sharedPreferences: SharedPreferences) {
   private val serverScheme: String = "http://"
   private var callCompetitionListGet: Call? = null
   private var callCompetitionSet: Call? = null
+  private var callTerminalsGet: Call? = null
 
   private val httpClient = OkHttpClient()
   private val moshi: Moshi = Moshi.Builder().build()
   private val adminRequestJsonAdapter = moshi.adapter(AdminAPI.AdminRequest::class.java)
   private val adminResponseJsonAdapter = moshi.adapter(AdminAPI.AdminResponse::class.java)
   private val competitionListJsonAdapter = moshi.adapter(AdminAPI.CompetitionList::class.java)
+  private val getTerminalsJsonAdapter = moshi.adapter(AdminAPI.TerminalList::class.java)
 
   private fun getCredentials(): AdminAPI.Credentials {
     val terminalString: String = sharedPreferences.getString("terminal_string", "")!!
@@ -79,6 +81,26 @@ class Transport(private val sharedPreferences: SharedPreferences) {
       }
     })
     return call
+  }
+
+  fun getTerminals(
+    onBegin: () -> Unit,
+    onEnd: () -> Unit,
+    onFail: (message: String) -> Unit,
+    onResult: (terminalList: AdminAPI.TerminalList) -> Unit
+  ) {
+    val areq = AdminAPI.AdminRequest(Credentials = getCredentials())
+
+    callTerminalsGet = enqueue(
+      callTerminalsGet,
+      "/api/admin/terminal/list",
+      areq,
+      { source -> getTerminalsJsonAdapter.fromJson(source) },
+      onBegin = onBegin,
+      onEnd = onEnd,
+      onFail = onFail,
+      onResult = onResult
+    )
   }
 
   fun setCompetition(
