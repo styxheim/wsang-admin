@@ -27,9 +27,6 @@
         <action
             android:id="@+id/action_CompetitionFragment_to_CompetitionListFragment"
             app:destination="@id/CompetitionListFragment" />
-        <action
-            android:id="@+id/action_CompetitionFragment_to_FailFragment"
-            app:destination="@id/FailFragment" />
     </fragment>
     <fragment
         android:id="@+id/FailFragment"
@@ -39,8 +36,5 @@
         <action
             android:id="@+id/action_FailFragment_to_CompetitionListFragment"
             app:destination="@id/CompetitionListFragment" />
-        <action
-            android:id="@+id/action_FailFragment_to_CompeititionFragment"
-            app:destination="@id/ComeptitionFragment" />
     </fragment>
 </navigation>
