@@ -42,6 +42,10 @@
 
     <!-- competition list fragment -->
     <string name="competition_add">Start new competition</string>
+    <string name="competition_manage_terminals">Manage terminals</string>
+
+    <!-- terminals fragment -->
+    <string name="terminals_add">Register new terminal</string>
 
     <!-- competition fragment -->
     <string name="competition_id">Id</string>
@@ -69,5 +73,7 @@
     <!-- discipline name dialog -->
     <string name="discipline_name">Discipline name</string>
     <string name="set_discipline_name">Set discipline name</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

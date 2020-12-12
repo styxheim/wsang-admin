@@ -10,6 +10,7 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.StringRes
+import androidx.navigation.fragment.findNavController
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.squareup.moshi.JsonAdapter
@@ -250,6 +251,13 @@ class CompetitionFragment : Fragment() {
     activity?.title = getString(R.string.competition_unknown_value)
     if (competition.CompetitionName?.compareTo("") ?: 0 != 0) {
       activity?.title = competition.CompetitionName
+    }
+
+    binding!!.competitionManageTerminals.setOnClickListener {
+      val competitionJson = competitionJsonAdapter.toJson(competition)
+      val action = CompetitionFragmentDirections.actionToTerminalsFragment(competitionJson)
+
+      findNavController().navigate(action)
     }
   }
 }

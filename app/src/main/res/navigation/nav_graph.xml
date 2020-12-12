@@ -23,10 +23,9 @@
         android:name="ru.styxheim.wsang_admin.CompetitionFragment"
         android:label="@string/competition_fragment_label"
         tools:layout="@layout/fragment_competition">
-
         <action
-            android:id="@+id/action_CompetitionFragment_to_CompetitionListFragment"
-            app:destination="@id/CompetitionListFragment" />
+            android:id="@+id/actionToTerminalsFragment"
+            app:destination="@id/competitionTerminalsFragment" />
     </fragment>
     <fragment
         android:id="@+id/FailFragment"
@@ -36,5 +35,13 @@
         <action
             android:id="@+id/action_FailFragment_to_CompetitionListFragment"
             app:destination="@id/CompetitionListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/competitionTerminalsFragment"
+        android:name="ru.styxheim.wsang_admin.CompetitionTerminalsFragment"
+        android:label="fragment_competition_terminals"
+        tools:layout="@layout/fragment_competition_terminals" >
+        <argument android:name="competition_json"
+            app:argType="string" />
     </fragment>
 </navigation>
