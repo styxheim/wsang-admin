@@ -59,7 +59,7 @@ object AdminAPI {
   @JsonClass(generateAdapter = true)
   data class TerminalStatusShort(
     val TimeStamp: Long,
-    val TerminalString: String,
+    val TerminalId: String,
     val Activity: TerminalActivity
   )
 
