@@ -13,7 +13,9 @@
 
         <action
             android:id="@+id/action_ComptitionListFragment_to_CompetitionFragment"
-            app:destination="@id/ComeptitionFragment" />
+            app:destination="@id/ComeptitionFragment"
+            app:enterAnim="@anim/fragment_close_enter"
+            app:exitAnim="@anim/fragment_close_exit" />
         <action
             android:id="@+id/action_CompetitionListFragment_to_FailFragment"
             app:destination="@id/FailFragment" />
@@ -25,7 +27,9 @@
         tools:layout="@layout/fragment_competition">
         <action
             android:id="@+id/actionToTerminalsFragment"
-            app:destination="@id/competitionTerminalsFragment" />
+            app:destination="@id/competitionTerminalsFragment"
+            app:enterAnim="@anim/fragment_close_enter"
+            app:exitAnim="@anim/fragment_open_exit" />
     </fragment>
     <fragment
         android:id="@+id/FailFragment"
