@@ -2,6 +2,8 @@
     <string name="app_name">wsang-admin</string>
     <string name="action_settings">Settings</string>
 
+    <string name="accept">OK</string>
+
     <!-- Strings used for fragments for navigation -->
     <string name="competition_list_fragment_label">Competition list</string>
     <string name="competition_fragment_label">Second Fragment</string>
@@ -46,6 +48,9 @@
 
     <!-- terminals fragment -->
     <string name="terminals_add">Register new terminal</string>
+    <string name="terminals_loading">Load terminal list…</string>
+    <string name="terminals_loading_error">Error while terminal list load</string>
+    <string name="terminal_list_is_empty">Server has no connected terminals</string>
 
     <!-- competition fragment -->
     <string name="competition_id">Id</string>

@@ -1,5 +1,6 @@
 package ru.styxheim.wsang_admin
 
+import android.app.AlertDialog
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -43,5 +44,62 @@ class CompetitionTerminalsFragment : Fragment() {
   override fun onDestroyView() {
     super.onDestroyView()
     binding = null
+  }
+
+  fun selectTerminalsFromList() {
+    val dialogBuilder = AlertDialog.Builder(requireContext())
+    var dialog: AlertDialog? = null
+
+    dialogBuilder.setTitle(R.string.updating)
+    dialogBuilder.setMessage(R.string.terminals_loading)
+
+    transport?.getTerminals(
+      onBegin = { dialog = dialogBuilder.show() },
+      onEnd = { dialog?.dismiss() },
+      onFail = { message ->
+        activity?.runOnUiThread {
+          val failDialogBuilder = AlertDialog.Builder(requireContext())
+
+          failDialogBuilder.setTitle(R.string.terminals_loading_error)
+          failDialogBuilder.setMessage(message)
+          failDialogBuilder.setNeutralButton(R.string.accept) { _, _ -> }
+          failDialogBuilder.show()
+        }
+      },
+      onResult = { terminalList: AdminAPI.TerminalList ->
+        activity?.runOnUiThread {
+          val terminalChooseBuilder = AlertDialog.Builder(requireContext())
+
+          terminalChooseBuilder.setTitle(R.string.terminals_add)
+          if (terminalList.TerminalList.isEmpty()) {
+            terminalChooseBuilder.setMessage(R.string.terminal_list_is_empty)
+            terminalChooseBuilder.setNeutralButton(R.string.accept) { _, _ -> }
+          } else {
+            val terminalStatusList =
+              terminalList.TerminalList.sortedByDescending { it.TimeStamp }
+            val nameList = terminalStatusList.map { it.TerminalId }.toTypedArray()
+            val isCheckedList = BooleanArray(nameList.size) { false }
+
+            terminalChooseBuilder.setMultiChoiceItems(
+              nameList,
+              isCheckedList
+            ) { _, which, isChecked ->
+              isCheckedList[which] = isChecked
+            }
+
+            terminalChooseBuilder.setNegativeButton(R.string.cancel) { _, _ -> }
+            terminalChooseBuilder.setPositiveButton(R.string.save) { _, _ -> /* TODO */ }
+          }
+          terminalChooseBuilder.show()
+        }
+      }
+    )
+  }
+
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    super.onViewCreated(view, savedInstanceState)
+    binding!!.terminalsAdd.setOnClickListener {
+      selectTerminalsFromList()
+    }
   }
 }
