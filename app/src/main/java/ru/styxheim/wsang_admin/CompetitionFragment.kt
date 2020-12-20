@@ -137,34 +137,36 @@ class CompetitionFragment : Fragment() {
     arguments = bundle
   }
 
-  private fun setupCompetitionSaveFab() {
-    binding!!.competitionSave.setOnClickListener {
-      transport?.setCompetition(
-        competition,
-        onBegin = { activity?.runOnUiThread { binding!!.competitionSave.isEnabled = false } },
-        onEnd = { activity?.runOnUiThread { binding!!.competitionSave.isEnabled = true } },
-        onFail = { message ->
+  private fun saveCompetition() {
+    transport?.setCompetition(
+      competition,
+      onBegin = { activity?.runOnUiThread { binding!!.competitionSave.isEnabled = false } },
+      onEnd = { activity?.runOnUiThread { binding!!.competitionSave.isEnabled = true } },
+      onFail = { message ->
+        activity?.runOnUiThread {
+          Toast.makeText(
+            context,
+            "Save failed: {$message}",
+            Toast.LENGTH_SHORT
+          ).show()
+        }
+      },
+      onResult = {
+        activity?.runOnUiThread {
           activity?.runOnUiThread {
             Toast.makeText(
               context,
-              "Save failed: {$message}",
+              "Successfull save",
               Toast.LENGTH_SHORT
             ).show()
           }
-        },
-        onResult = {
-          activity?.runOnUiThread {
-            activity?.runOnUiThread {
-              Toast.makeText(
-                context,
-                "Successfull save",
-                Toast.LENGTH_SHORT
-              ).show()
-            }
-          }
         }
-      )
-    }
+      }
+    )
+  }
+
+  private fun setupCompetitionSaveFab() {
+    binding!!.competitionSave.setOnClickListener { saveCompetition() }
   }
 
   private fun updateListWithDialog(
