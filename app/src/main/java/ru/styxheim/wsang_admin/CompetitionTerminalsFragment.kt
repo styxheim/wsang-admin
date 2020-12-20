@@ -48,7 +48,7 @@ class CompetitionTerminalsFragment : Fragment() {
     dialogBuilder.setTitle(R.string.updating)
     dialogBuilder.setMessage(R.string.terminals_loading)
 
-    transport?.getTerminals(
+    transport?.getTerminalsActivities(
       onBegin = { dialog = dialogBuilder.show() },
       onEnd = { dialog?.dismiss() },
       onFail = { message ->
@@ -61,17 +61,17 @@ class CompetitionTerminalsFragment : Fragment() {
           failDialogBuilder.show()
         }
       },
-      onResult = { terminalList: AdminAPI.TerminalList ->
+      onResult = { terminalActivityList: AdminAPI.TerminalActivityList ->
         activity?.runOnUiThread {
           val terminalChooseBuilder = AlertDialog.Builder(requireContext())
 
           terminalChooseBuilder.setTitle(R.string.terminals_add)
-          if (terminalList.TerminalList.isEmpty()) {
+          if (terminalActivityList.TerminalList.isEmpty()) {
             terminalChooseBuilder.setMessage(R.string.terminal_list_is_empty)
             terminalChooseBuilder.setNeutralButton(R.string.accept) { _, _ -> }
           } else {
             val terminalStatusList =
-              terminalList.TerminalList.sortedByDescending { it.TimeStamp }
+              terminalActivityList.TerminalList.sortedByDescending { it.TimeStamp }
             val nameList = terminalStatusList.map { it.TerminalId }.toTypedArray()
             val isCheckedList = BooleanArray(nameList.size) { false }
 

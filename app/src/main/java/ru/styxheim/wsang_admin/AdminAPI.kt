@@ -64,7 +64,7 @@ object AdminAPI {
   )
 
   @JsonClass(generateAdapter = true)
-  data class TerminalList(
+  data class TerminalActivityList(
     val TerminalList: List<TerminalStatusShort> = mutableListOf()
   ) : AdminResponse(Error = null)
  }

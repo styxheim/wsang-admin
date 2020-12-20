@@ -20,7 +20,7 @@ class Transport(private val sharedPreferences: SharedPreferences) {
   private val adminRequestJsonAdapter = moshi.adapter(AdminAPI.AdminRequest::class.java)
   private val adminResponseJsonAdapter = moshi.adapter(AdminAPI.AdminResponse::class.java)
   private val competitionListJsonAdapter = moshi.adapter(AdminAPI.CompetitionList::class.java)
-  private val getTerminalsJsonAdapter = moshi.adapter(AdminAPI.TerminalList::class.java)
+  private val getTerminalsJsonAdapter = moshi.adapter(AdminAPI.TerminalActivityList::class.java)
 
   private fun getCredentials(): AdminAPI.Credentials {
     val terminalString: String = sharedPreferences.getString("terminal_string", "")!!
@@ -83,11 +83,11 @@ class Transport(private val sharedPreferences: SharedPreferences) {
     return call
   }
 
-  fun getTerminals(
+  fun getTerminalsActivities(
     onBegin: () -> Unit,
     onEnd: () -> Unit,
     onFail: (message: String) -> Unit,
-    onResult: (terminalList: AdminAPI.TerminalList) -> Unit
+    onResult: (terminalActivityList: AdminAPI.TerminalActivityList) -> Unit
   ) {
     val areq = AdminAPI.AdminRequest(Credentials = getCredentials())
 
