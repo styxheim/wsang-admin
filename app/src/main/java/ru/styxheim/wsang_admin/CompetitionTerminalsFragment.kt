@@ -12,11 +12,6 @@ import ru.styxheim.wsang_admin.databinding.FragmentCompetitionTerminalsBinding
 
 private const val COMPTITION_PARAM = "competition_json"
 
-/**
- * A simple [Fragment] subclass.
- * Use the [CompetitionTerminalsFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class CompetitionTerminalsFragment : Fragment() {
   private var binding: FragmentCompetitionTerminalsBinding? = null
   private var competition: AdminAPI.RaceStatus = AdminAPI.RaceStatus(SyncPoint = 0)
@@ -46,7 +41,7 @@ class CompetitionTerminalsFragment : Fragment() {
     binding = null
   }
 
-  fun selectTerminalsFromList() {
+  private fun selectTerminalsFromList() {
     val dialogBuilder = AlertDialog.Builder(requireContext())
     var dialog: AlertDialog? = null
 
