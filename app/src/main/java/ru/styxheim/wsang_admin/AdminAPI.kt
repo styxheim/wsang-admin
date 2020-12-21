@@ -67,4 +67,18 @@ object AdminAPI {
   data class TerminalActivityList(
     val TerminalList: List<TerminalStatusShort> = mutableListOf()
   ) : AdminResponse(Error = null)
- }
+
+  @JsonClass(generateAdapter = true)
+  data class TerminalDiscipline(
+    val Id: Int,
+    val Gates: MutableList<Int> = mutableListOf()
+  )
+
+  @JsonClass(generateAdapter = true)
+  data class TerminalStatus(
+    val TimeStamp: Long,
+    val TerminalString: String,
+    val Disciplines: MutableList<TerminalDiscipline> = mutableListOf(),
+    val Activity: TerminalActivity? = null
+  ) : AdminResponse(Error = null)
+}
