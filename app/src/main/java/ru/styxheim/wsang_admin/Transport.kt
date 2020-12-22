@@ -1,6 +1,7 @@
 package ru.styxheim.wsang_admin
 
 import android.content.SharedPreferences
+import android.net.wifi.hotspot2.pps.Credential
 import com.squareup.moshi.Moshi
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
@@ -14,6 +15,7 @@ class Transport(private val sharedPreferences: SharedPreferences) {
   private var callCompetitionListGet: Call? = null
   private var callCompetitionSet: Call? = null
   private var callTerminalsGet: Call? = null
+  private var callGetCompetitionTerminals: Call? = null
 
   private val httpClient = OkHttpClient()
   private val moshi: Moshi = Moshi.Builder().build()
@@ -21,6 +23,8 @@ class Transport(private val sharedPreferences: SharedPreferences) {
   private val adminResponseJsonAdapter = moshi.adapter(AdminAPI.AdminResponse::class.java)
   private val competitionListJsonAdapter = moshi.adapter(AdminAPI.CompetitionList::class.java)
   private val getTerminalsJsonAdapter = moshi.adapter(AdminAPI.TerminalActivityList::class.java)
+  private val getCompetitionTerminalsJsonAdapter =
+    moshi.adapter(AdminAPI.CompetitionTerminalList::class.java)
 
   private fun getCredentials(): AdminAPI.Credentials {
     val terminalString: String = sharedPreferences.getString("terminal_string", "")!!
@@ -101,6 +105,28 @@ class Transport(private val sharedPreferences: SharedPreferences) {
       onFail = onFail,
       onResult = onResult
     )
+  }
+
+  fun getCompetitionTerminals(
+    competitionId: Long,
+    onBegin: () -> Unit,
+    onEnd: () -> Unit,
+    onFail: (message: String) -> Unit,
+    onResult: (terminalList: AdminAPI.CompetitionTerminalList) -> Unit
+  ) {
+    val areq = AdminAPI.AdminRequest(Credentials = getCredentials())
+
+    callGetCompetitionTerminals =
+      enqueue(
+        callGetCompetitionTerminals,
+        "/api/admin/comeptition/get/${competitionId}",
+        areq,
+        { source -> getCompetitionTerminalsJsonAdapter.fromJson(source) },
+        onBegin,
+        onEnd,
+        onFail,
+        onResult
+      )
   }
 
   fun setCompetition(
