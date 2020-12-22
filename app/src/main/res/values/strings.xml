@@ -70,6 +70,9 @@
     <string name="edit_gates">Edit gates list</string>
     <string name="edit_list_hint">0, 1, 2, 3</string>
     <string name="edit_list_invalid_format">Invalid input format, must be: 0, 1, 2, 3</string>
+    <string name="terminals">Terminals</string>
+    <string name="competition_loading">Load competition…</string>
+    <string name="competition_loading_error">Error while load competition</string>
 
     <!-- discipline list -->
     <string name="discipline_name_null">&lt;unnamed&gt;</string>

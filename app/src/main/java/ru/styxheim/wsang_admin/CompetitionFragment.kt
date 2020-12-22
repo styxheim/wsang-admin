@@ -29,6 +29,7 @@ class CompetitionFragment : Fragment() {
   private val competitionJsonAdapter:
       JsonAdapter<AdminAPI.RaceStatus> = moshi.adapter(AdminAPI.RaceStatus::class.java)
   private var competition: AdminAPI.RaceStatus = AdminAPI.RaceStatus(SyncPoint = 0)
+  private var terminalList: MutableList<AdminAPI.TerminalStatus> = mutableListOf()
   private var competitionDisciplineAdapter: CompetitionDisciplineAdapter? = null
 
 
@@ -135,6 +136,36 @@ class CompetitionFragment : Fragment() {
 
     bundle.putString("competition_json", competitionJson)
     arguments = bundle
+  }
+
+  private fun loadCompetitionTerminals() {
+    val loadingDialogBuilder = AlertDialog.Builder(requireContext()).setTitle(R.string.updating)
+    var loadingDialog: AlertDialog? = null
+
+    loadingDialogBuilder.setMessage(R.string.competition_loading)
+    loadingDialogBuilder.setNeutralButton(R.string.accept) { _, _ -> }
+
+    transport?.getCompetitionTerminals(
+      competition.CompetitionId,
+      onBegin = { activity?.runOnUiThread { loadingDialog = loadingDialogBuilder.show() } },
+      onEnd = { activity?.runOnUiThread { loadingDialog?.dismiss() } },
+      onFail = { message ->
+        activity?.runOnUiThread {
+          val errorDialog = AlertDialog.Builder(requireContext())
+
+          errorDialog.setTitle(R.string.competition_loading_error)
+          errorDialog.setMessage(message)
+          errorDialog.show()
+        }
+      },
+      onResult = { competitionTerminalList ->
+        activity?.runOnUiThread {
+          terminalList.clear()
+          terminalList.addAll(competitionTerminalList.TerminalList)
+          binding!!.terminals.text = terminalList.count().toString()
+        }
+      }
+    )
   }
 
   private fun saveCompetition() {
@@ -261,5 +292,8 @@ class CompetitionFragment : Fragment() {
 
       findNavController().navigate(action)
     }
+
+    binding!!.terminals.text = terminalList.count().toString()
+    loadCompetitionTerminals()
   }
 }
