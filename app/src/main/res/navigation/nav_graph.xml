@@ -47,5 +47,8 @@
         tools:layout="@layout/fragment_competition_terminals" >
         <argument android:name="competition_json"
             app:argType="string" />
+        <argument
+            android:name="terminals_json"
+            app:argType="string" />
     </fragment>
 </navigation>

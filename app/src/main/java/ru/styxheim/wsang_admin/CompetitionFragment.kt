@@ -28,6 +28,8 @@ class CompetitionFragment : Fragment() {
   private val moshi: Moshi = Moshi.Builder().build()
   private val competitionJsonAdapter:
       JsonAdapter<AdminAPI.RaceStatus> = moshi.adapter(AdminAPI.RaceStatus::class.java)
+  private val competitionTerminalListJsonAdapter =
+    moshi.adapter(AdminAPI.CompetitionTerminalList::class.java)
   private var competition: AdminAPI.RaceStatus = AdminAPI.RaceStatus(SyncPoint = 0)
   private var terminalList: MutableList<AdminAPI.TerminalStatus> = mutableListOf()
   private var competitionDisciplineAdapter: CompetitionDisciplineAdapter? = null
@@ -305,7 +307,10 @@ class CompetitionFragment : Fragment() {
 
     binding!!.competitionManageTerminals.setOnClickListener {
       val competitionJson = competitionJsonAdapter.toJson(competition)
-      val action = CompetitionFragmentDirections.actionToTerminalsFragment(competitionJson)
+      val terminalsJson =
+        competitionTerminalListJsonAdapter.toJson(AdminAPI.CompetitionTerminalList(terminalList))
+      val action =
+        CompetitionFragmentDirections.actionToTerminalsFragment(competitionJson, terminalsJson)
 
       findNavController().navigate(action)
     }

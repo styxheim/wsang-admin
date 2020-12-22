@@ -15,14 +15,24 @@ private const val COMPTITION_PARAM = "competition_json"
 class CompetitionTerminalsFragment : Fragment() {
   private var binding: FragmentCompetitionTerminalsBinding? = null
   private var competition: AdminAPI.RaceStatus = AdminAPI.RaceStatus(SyncPoint = 0)
+  private val terminalList: MutableList<AdminAPI.TerminalStatus> = mutableListOf()
   private var transport: Transport? = null
   private val moshi: Moshi = Moshi.Builder().build()
   private val competitionJsonAdapter = moshi.adapter(AdminAPI.RaceStatus::class.java)
+  private val competitionTerminalListJsonAdapter =
+    moshi.adapter(AdminAPI.CompetitionTerminalList::class.java)
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     arguments?.getString(COMPTITION_PARAM, null)?.let {
       competition = competitionJsonAdapter.fromJson(it)!!
+    }
+
+    terminalList.clear()
+    arguments?.getString("terminals_json", null)?.let {
+      competitionTerminalListJsonAdapter.fromJson(it)?.let { jsonTerminalList ->
+        terminalList.addAll(jsonTerminalList.TerminalList)
+      }
     }
 
     transport = Transport(PreferenceManager.getDefaultSharedPreferences(context)!!)
@@ -64,14 +74,19 @@ class CompetitionTerminalsFragment : Fragment() {
       onResult = { terminalActivityList: AdminAPI.TerminalActivityList ->
         activity?.runOnUiThread {
           val terminalChooseBuilder = AlertDialog.Builder(requireContext())
+          var terminalStatusList = terminalActivityList.TerminalList
+
+          terminalStatusList =
+            terminalStatusList.filter { terminalStatus ->
+              terminalList.find { terminal -> terminal.TerminalString == terminalStatus.TerminalId } == null
+            }
+          terminalStatusList = terminalStatusList.sortedByDescending { it.TimeStamp }
 
           terminalChooseBuilder.setTitle(R.string.terminals_add)
           if (terminalActivityList.TerminalList.isEmpty()) {
             terminalChooseBuilder.setMessage(R.string.terminal_list_is_empty)
             terminalChooseBuilder.setNeutralButton(R.string.accept) { _, _ -> }
           } else {
-            val terminalStatusList =
-              terminalActivityList.TerminalList.sortedByDescending { it.TimeStamp }
             val nameList = terminalStatusList.map { it.TerminalId }.toTypedArray()
             val isCheckedList = BooleanArray(nameList.size) { false }
 
