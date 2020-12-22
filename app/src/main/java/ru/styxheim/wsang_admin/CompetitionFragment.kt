@@ -305,7 +305,7 @@ class CompetitionFragment : Fragment() {
       activity?.title = competition.CompetitionName
     }
 
-    binding!!.competitionManageTerminals.setOnClickListener {
+    binding!!.terminalsPlate.setOnClickListener {
       val competitionJson = competitionJsonAdapter.toJson(competition)
       val terminalsJson =
         competitionTerminalListJsonAdapter.toJson(AdminAPI.CompetitionTerminalList(terminalList))
