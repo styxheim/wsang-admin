@@ -73,6 +73,8 @@
     <string name="terminals">Terminals</string>
     <string name="competition_loading">Load competition…</string>
     <string name="competition_loading_error">Error while load competition</string>
+    <string name="competition_saving">Save competition…</string>
+    <string name="competition_saving_error">Error shiw save competition</string>
 
     <!-- discipline list -->
     <string name="discipline_name_null">&lt;unnamed&gt;</string>

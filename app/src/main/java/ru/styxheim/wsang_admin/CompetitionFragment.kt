@@ -169,17 +169,34 @@ class CompetitionFragment : Fragment() {
   }
 
   private fun saveCompetition() {
+    val savingDialogBuilder = AlertDialog.Builder(requireContext())
+    var savingDialog: AlertDialog? = null
+
+    savingDialogBuilder.setTitle(R.string.updating)
+    savingDialogBuilder.setMessage(R.string.competition_saving)
+    savingDialogBuilder.setNeutralButton(R.string.accept) { _, _ -> }
+
     transport?.setCompetition(
       competition,
-      onBegin = { activity?.runOnUiThread { binding!!.competitionSave.isEnabled = false } },
-      onEnd = { activity?.runOnUiThread { binding!!.competitionSave.isEnabled = true } },
+      onBegin = {
+        activity?.runOnUiThread {
+          binding!!.competitionSave.isEnabled = false
+          savingDialog = savingDialogBuilder.show()
+        }
+      },
+      onEnd = {
+        activity?.runOnUiThread {
+          binding!!.competitionSave.isEnabled = true
+          savingDialog?.dismiss()
+        }
+      },
       onFail = { message ->
         activity?.runOnUiThread {
-          Toast.makeText(
-            context,
-            "Save failed: {$message}",
-            Toast.LENGTH_SHORT
-          ).show()
+          val errorDialog = AlertDialog.Builder(requireContext())
+
+          errorDialog.setTitle(R.string.competition_saving_error)
+          errorDialog.setMessage(message)
+          errorDialog.show()
         }
       },
       onResult = {
