@@ -80,5 +80,10 @@ object AdminAPI {
     val TerminalString: String,
     val Disciplines: MutableList<TerminalDiscipline> = mutableListOf(),
     val Activity: TerminalActivity? = null
+  )
+
+  @JsonClass(generateAdapter = true)
+  data class CompetitionTerminalList(
+    val TerminalList: MutableList<TerminalStatus> = mutableListOf()
   ) : AdminResponse(Error = null)
 }
