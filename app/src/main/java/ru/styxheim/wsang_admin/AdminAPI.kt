@@ -86,4 +86,11 @@ object AdminAPI {
   data class CompetitionTerminalList(
     val TerminalList: MutableList<TerminalStatus> = mutableListOf()
   ) : AdminResponse(Error = null)
+
+  object Request {
+    @JsonClass(generateAdapter = true)
+    data class TerminalsSet(
+      var TerminalList: MutableList<TerminalStatus> = mutableListOf()
+    ) : AdminRequest()
+  }
 }
