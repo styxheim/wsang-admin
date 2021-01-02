@@ -23,7 +23,7 @@ object AdminAPI {
 
   @JsonClass(generateAdapter = true)
   open class AdminResponse(
-    val Error: Error?
+    open val Error: Error? = null
   )
 
   @JsonClass(generateAdapter = true)
@@ -74,20 +74,23 @@ object AdminAPI {
 
   object Response {
     @JsonClass(generateAdapter = true)
-    data class CompetitionList (
+    data class CompetitionList(
       val Competitions: MutableList<RaceStatus> = mutableListOf(),
-    ) : AdminResponse(Error = null)
+      override val Error: Error? = null
+    ) : AdminResponse()
 
     @JsonClass(generateAdapter = true)
     data class Competition(
       val Competition: RaceStatus = RaceStatus(SyncPoint = null),
-      val TerminalList: MutableList<TerminalStatus> = mutableListOf()
-    ) : AdminResponse(Error = null)
+      val TerminalList: MutableList<TerminalStatus> = mutableListOf(),
+      override val Error: Error? = null
+    ) : AdminResponse()
 
     @JsonClass(generateAdapter = true)
     data class TerminalActivityList(
-      val TerminalList: List<TerminalStatusShort> = mutableListOf()
-    ) : AdminResponse(Error = null)
+      val TerminalList: List<TerminalStatusShort> = mutableListOf(),
+      override val Error: Error? = null
+    ) : AdminResponse()
   }
 
   object Request {
