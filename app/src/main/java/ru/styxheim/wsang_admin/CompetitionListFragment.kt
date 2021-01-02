@@ -115,7 +115,7 @@ class CompetitionListFragment : Fragment(), SharedPreferences.OnSharedPreference
     )
   }
 
-  private fun responseAdminList(response: AdminAPI.CompetitionList) {
+  private fun responseAdminList(response: AdminAPI.Response.CompetitionList) {
     binding!!.competitionAddView.visibility = View.VISIBLE
     competitionLoaded = true
     competitionList.clear()

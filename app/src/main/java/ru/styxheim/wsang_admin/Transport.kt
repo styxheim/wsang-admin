@@ -21,9 +21,11 @@ class Transport(private val sharedPreferences: SharedPreferences) {
   private val moshi: Moshi = Moshi.Builder().build()
   private val adminRequestJsonAdapter = moshi.adapter(AdminAPI.AdminRequest::class.java)
   private val adminResponseJsonAdapter = moshi.adapter(AdminAPI.AdminResponse::class.java)
-  private val competitionListJsonAdapter = moshi.adapter(AdminAPI.CompetitionList::class.java)
-  private val getTerminalsJsonAdapter = moshi.adapter(AdminAPI.TerminalActivityList::class.java)
-  private val getCompetitionJsonAdapter = moshi.adapter(AdminAPI.CompetitionResponse::class.java)
+  private val competitionListJsonAdapter =
+    moshi.adapter(AdminAPI.Response.CompetitionList::class.java)
+  private val getTerminalsJsonAdapter =
+    moshi.adapter(AdminAPI.Response.TerminalActivityList::class.java)
+  private val getCompetitionJsonAdapter = moshi.adapter(AdminAPI.Response.Competition::class.java)
 
   private fun getCredentials(): AdminAPI.Credentials {
     val terminalString: String = sharedPreferences.getString("terminal_string", "")!!
@@ -90,7 +92,7 @@ class Transport(private val sharedPreferences: SharedPreferences) {
     onBegin: () -> Unit,
     onEnd: () -> Unit,
     onFail: (message: String) -> Unit,
-    onResult: (terminalActivityList: AdminAPI.TerminalActivityList) -> Unit
+    onResult: (terminalActivityList: AdminAPI.Response.TerminalActivityList) -> Unit
   ) {
     val areq = AdminAPI.AdminRequest(Credentials = getCredentials())
 
@@ -111,7 +113,7 @@ class Transport(private val sharedPreferences: SharedPreferences) {
     onBegin: () -> Unit,
     onEnd: () -> Unit,
     onFail: (message: String) -> Unit,
-    onResult: (terminalList: AdminAPI.CompetitionResponse) -> Unit
+    onResult: (terminalList: AdminAPI.Response.Competition) -> Unit
   ) {
     val areq = AdminAPI.AdminRequest(Credentials = getCredentials())
 
@@ -176,7 +178,7 @@ class Transport(private val sharedPreferences: SharedPreferences) {
     onBegin: () -> Unit,
     onEnd: () -> Unit,
     onFail: (message: String) -> Unit,
-    onResult: (competitionList: AdminAPI.CompetitionList) -> Unit,
+    onResult: (competitionList: AdminAPI.Response.CompetitionList) -> Unit,
   ) {
     val areq = AdminAPI.AdminRequest(Credentials = getCredentials())
 

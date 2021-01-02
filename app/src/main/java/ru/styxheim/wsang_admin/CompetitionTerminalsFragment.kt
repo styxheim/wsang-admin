@@ -17,7 +17,7 @@ class CompetitionTerminalsFragment : Fragment() {
   private var transport: Transport? = null
   private val moshi: Moshi = Moshi.Builder().build()
   private val competitionRequestJsonAdapter =
-    moshi.adapter(AdminAPI.CompetitionResponse::class.java)
+    moshi.adapter(AdminAPI.Response.Competition::class.java)
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -72,7 +72,7 @@ class CompetitionTerminalsFragment : Fragment() {
           failDialogBuilder.show()
         }
       },
-      onResult = { terminalActivityList: AdminAPI.TerminalActivityList ->
+      onResult = { terminalActivityList: AdminAPI.Response.TerminalActivityList ->
         activity?.runOnUiThread {
           val terminalChooseBuilder = AlertDialog.Builder(requireContext())
           var terminalStatusList = terminalActivityList.TerminalList

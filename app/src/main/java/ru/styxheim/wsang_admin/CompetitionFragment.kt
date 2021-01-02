@@ -29,7 +29,7 @@ class CompetitionFragment : Fragment() {
   private val competitionJsonAdapter:
       JsonAdapter<AdminAPI.RaceStatus> = moshi.adapter(AdminAPI.RaceStatus::class.java)
   private val competitionResponseJsonAdapter =
-    moshi.adapter(AdminAPI.CompetitionResponse::class.java)
+    moshi.adapter(AdminAPI.Response.Competition::class.java)
   private var competition: AdminAPI.RaceStatus = AdminAPI.RaceStatus(SyncPoint = 0)
   private var terminalList: MutableList<AdminAPI.TerminalStatus> = mutableListOf()
   private var competitionDisciplineAdapter: CompetitionDisciplineAdapter? = null
@@ -306,7 +306,7 @@ class CompetitionFragment : Fragment() {
     }
 
     binding!!.terminalsPlate.setOnClickListener {
-      val competitionResponse = AdminAPI.CompetitionResponse(
+      val competitionResponse = AdminAPI.Response.Competition(
         Competition = competition,
         TerminalList = terminalList
       )
