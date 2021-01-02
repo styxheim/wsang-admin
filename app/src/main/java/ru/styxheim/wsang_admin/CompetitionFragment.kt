@@ -30,6 +30,7 @@ class CompetitionFragment : Fragment() {
       JsonAdapter<AdminAPI.RaceStatus> = moshi.adapter(AdminAPI.RaceStatus::class.java)
   private val competitionResponseJsonAdapter =
     moshi.adapter(AdminAPI.Response.Competition::class.java)
+  private var isNewCompetition: Boolean = false
   private var competition: AdminAPI.RaceStatus = AdminAPI.RaceStatus(SyncPoint = 0)
   private var terminalList: MutableList<AdminAPI.TerminalStatus> = mutableListOf()
   private var competitionDisciplineAdapter: CompetitionDisciplineAdapter? = null
@@ -39,6 +40,10 @@ class CompetitionFragment : Fragment() {
     super.onCreate(savedInstanceState)
     arguments?.getString("competition_json", null)?.let {
       competition = competitionJsonAdapter.fromJson(it)!!
+    }
+
+    arguments?.getBoolean("is_new_competition", false)?.let {
+      isNewCompetition = it
     }
 
     transport = Transport(PreferenceManager.getDefaultSharedPreferences(context)!!)
@@ -165,6 +170,8 @@ class CompetitionFragment : Fragment() {
           terminalList.clear()
           terminalList.addAll(competitionTerminalList.TerminalList)
           binding!!.terminals.text = terminalList.count().toString()
+          isNewCompetition = false
+          updateView()
         }
       }
     )
@@ -209,6 +216,7 @@ class CompetitionFragment : Fragment() {
               "Successfull save",
               Toast.LENGTH_SHORT
             ).show()
+            loadCompetition()
           }
         }
       }
@@ -255,8 +263,24 @@ class CompetitionFragment : Fragment() {
     dialogBuilder.show()
   }
 
-  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-    super.onViewCreated(view, savedInstanceState)
+  private fun updateView() {
+    if (isNewCompetition) {
+      binding!!.terminalsPlate.visibility = View.GONE
+    } else {
+      binding!!.terminalsPlate.visibility = View.VISIBLE
+      binding!!.terminalsPlate.setOnClickListener {
+        val competitionResponse = AdminAPI.Response.Competition(
+          Competition = competition,
+          TerminalList = terminalList
+        )
+        val competitionResponseJson = competitionResponseJsonAdapter.toJson(competitionResponse)
+        val action =
+          CompetitionFragmentDirections.actionToTerminalsFragment(competitionResponseJson)
+
+        findNavController().navigate(action)
+      }
+    }
+
     /* competition id */
     binding!!.competitionId.text = competition.CompetitionId.toString()
     /* timestamp */
@@ -266,6 +290,27 @@ class CompetitionFragment : Fragment() {
     competition.Crews?.let {
       binding?.crewsCount?.text = it.size.toString()
     }
+
+    binding!!.penalties.text = getString(R.string.penalties_null)
+    if (competition.Penalties!!.isNotEmpty()) {
+      binding!!.penalties.text = competition.Penalties!!.joinToString()
+    }
+
+    activity?.title = getString(R.string.competition_unknown_value)
+    if (competition.CompetitionName?.compareTo("") ?: 0 != 0) {
+      activity?.title = competition.CompetitionName
+    }
+
+    binding!!.gates.text = getString(R.string.gates_null)
+    if (competition.Gates!!.isNotEmpty()) {
+      binding!!.gates.text = competition.Gates!!.joinToString()
+    }
+
+    competitionDisciplineAdapter?.notifyDataSetChanged()
+  }
+
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    super.onViewCreated(view, savedInstanceState)
 
     /* penalties */
     val penaltiesOnClick = {
@@ -277,10 +322,6 @@ class CompetitionFragment : Fragment() {
     }
     binding!!.penalties.setOnClickListener { penaltiesOnClick() }
     binding!!.penaltiesPlate.setOnClickListener { penaltiesOnClick() }
-    binding!!.penalties.text = getString(R.string.penalties_null)
-    if (competition.Penalties!!.isNotEmpty()) {
-      binding!!.penalties.text = competition.Penalties!!.joinToString()
-    }
 
     /* gates */
     val gatesOnClick = {
@@ -292,31 +333,13 @@ class CompetitionFragment : Fragment() {
     }
     binding!!.gates.setOnClickListener { gatesOnClick() }
     binding!!.gatesPlate.setOnClickListener { gatesOnClick() }
-    binding!!.gates.text = getString(R.string.gates_null)
-    if (competition.Gates!!.isNotEmpty()) {
-      binding!!.gates.text = competition.Gates!!.joinToString()
-    }
 
     setupDisciplineAdapter()
     setupCompetitionSaveFab()
 
-    activity?.title = getString(R.string.competition_unknown_value)
-    if (competition.CompetitionName?.compareTo("") ?: 0 != 0) {
-      activity?.title = competition.CompetitionName
-    }
-
-    binding!!.terminalsPlate.setOnClickListener {
-      val competitionResponse = AdminAPI.Response.Competition(
-        Competition = competition,
-        TerminalList = terminalList
-      )
-      val competitionResponseJson = competitionResponseJsonAdapter.toJson(competitionResponse)
-      val action = CompetitionFragmentDirections.actionToTerminalsFragment(competitionResponseJson)
-
-      findNavController().navigate(action)
-    }
-
     binding!!.terminals.text = terminalList.count().toString()
-    loadCompetition()
+    if (!isNewCompetition)
+      loadCompetition()
+    updateView()
   }
 }

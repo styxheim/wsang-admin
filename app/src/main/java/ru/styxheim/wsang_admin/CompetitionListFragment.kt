@@ -64,14 +64,14 @@ class CompetitionListFragment : Fragment(), SharedPreferences.OnSharedPreference
           TimeStamp = System.currentTimeMillis() / 1000,
           SyncPoint = 0
         )
-      navToCompetition(competition)
+      navToCompetition(competition, true)
     }
     binding!!.refreshList.setOnClickListener { this.loadCompetitionList() }
 
 
     class OnClick : CompetitionListAdapter.OnItemSelectListenerInterface {
       override fun onItemSelect(competition: AdminAPI.RaceStatus) {
-        navToCompetition(competition)
+        navToCompetition(competition, false)
       }
     }
 
@@ -105,10 +105,11 @@ class CompetitionListFragment : Fragment(), SharedPreferences.OnSharedPreference
     navigateToFail("Connection error: $message")
   }
 
-  private fun navToCompetition(competition: AdminAPI.RaceStatus) {
+  private fun navToCompetition(competition: AdminAPI.RaceStatus, is_new: Boolean) {
     val args = Bundle()
 
     args.putString("competition_json", competitionJsonAdapter.toJson(competition))
+    args.putBoolean("is_new_competition", is_new)
     findNavController().navigate(
       R.id.action_ComptitionListFragment_to_CompetitionFragment,
       args
