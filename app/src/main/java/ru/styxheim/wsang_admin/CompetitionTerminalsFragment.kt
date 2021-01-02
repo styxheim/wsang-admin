@@ -30,12 +30,6 @@ class CompetitionTerminalsFragment : Fragment() {
       terminalList.addAll(competitionResponse.TerminalList)
     }
 
-    arguments?.getString("terminals_json", null)?.let {
-      competitionRequestJsonAdapter.fromJson(it)?.let { jsonTerminalList ->
-        terminalList.addAll(jsonTerminalList.TerminalList)
-      }
-    }
-
     transport = Transport(PreferenceManager.getDefaultSharedPreferences(context)!!)
   }
 
