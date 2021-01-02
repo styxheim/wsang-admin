@@ -1,7 +1,6 @@
 package ru.styxheim.wsang_admin
 
 import android.content.SharedPreferences
-import android.net.wifi.hotspot2.pps.Credential
 import com.squareup.moshi.Moshi
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
@@ -15,7 +14,7 @@ class Transport(private val sharedPreferences: SharedPreferences) {
   private var callCompetitionListGet: Call? = null
   private var callCompetitionSet: Call? = null
   private var callTerminalsGet: Call? = null
-  private var callGetCompetitionTerminals: Call? = null
+  private var callCompetitionGet: Call? = null
   private var callCompetitionTerminalsSet: Call? = null
 
   private val httpClient = OkHttpClient()
@@ -24,8 +23,7 @@ class Transport(private val sharedPreferences: SharedPreferences) {
   private val adminResponseJsonAdapter = moshi.adapter(AdminAPI.AdminResponse::class.java)
   private val competitionListJsonAdapter = moshi.adapter(AdminAPI.CompetitionList::class.java)
   private val getTerminalsJsonAdapter = moshi.adapter(AdminAPI.TerminalActivityList::class.java)
-  private val getCompetitionTerminalsJsonAdapter =
-    moshi.adapter(AdminAPI.CompetitionTerminalList::class.java)
+  private val getCompetitionJsonAdapter = moshi.adapter(AdminAPI.CompetitionResponse::class.java)
 
   private fun getCredentials(): AdminAPI.Credentials {
     val terminalString: String = sharedPreferences.getString("terminal_string", "")!!
@@ -108,21 +106,21 @@ class Transport(private val sharedPreferences: SharedPreferences) {
     )
   }
 
-  fun getCompetitionTerminals(
+  fun getCompetition(
     competitionId: Long,
     onBegin: () -> Unit,
     onEnd: () -> Unit,
     onFail: (message: String) -> Unit,
-    onResult: (terminalList: AdminAPI.CompetitionTerminalList) -> Unit
+    onResult: (terminalList: AdminAPI.CompetitionResponse) -> Unit
   ) {
     val areq = AdminAPI.AdminRequest(Credentials = getCredentials())
 
-    callGetCompetitionTerminals =
+    callCompetitionGet =
       enqueue(
-        callGetCompetitionTerminals,
+        callCompetitionGet,
         "/api/admin/comeptition/get/${competitionId}",
         areq,
-        { source -> getCompetitionTerminalsJsonAdapter.fromJson(source) },
+        { source -> getCompetitionJsonAdapter.fromJson(source) },
         onBegin,
         onEnd,
         onFail,

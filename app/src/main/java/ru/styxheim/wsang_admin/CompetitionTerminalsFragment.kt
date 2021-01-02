@@ -10,27 +10,28 @@ import androidx.preference.PreferenceManager
 import com.squareup.moshi.Moshi
 import ru.styxheim.wsang_admin.databinding.FragmentCompetitionTerminalsBinding
 
-private const val COMPTITION_PARAM = "competition_json"
-
 class CompetitionTerminalsFragment : Fragment() {
   private var binding: FragmentCompetitionTerminalsBinding? = null
   private var competition: AdminAPI.RaceStatus = AdminAPI.RaceStatus(SyncPoint = 0)
   private val terminalList: MutableList<AdminAPI.TerminalStatus> = mutableListOf()
   private var transport: Transport? = null
   private val moshi: Moshi = Moshi.Builder().build()
-  private val competitionJsonAdapter = moshi.adapter(AdminAPI.RaceStatus::class.java)
-  private val competitionTerminalListJsonAdapter =
-    moshi.adapter(AdminAPI.CompetitionTerminalList::class.java)
+  private val competitionRequestJsonAdapter =
+    moshi.adapter(AdminAPI.CompetitionResponse::class.java)
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    arguments?.getString(COMPTITION_PARAM, null)?.let {
-      competition = competitionJsonAdapter.fromJson(it)!!
-    }
 
     terminalList.clear()
+    arguments?.getString("competition_response_json", null)?.let {
+      val competitionResponse = competitionRequestJsonAdapter.fromJson(it)
+
+      competition = competitionResponse!!.Competition
+      terminalList.addAll(competitionResponse.TerminalList)
+    }
+
     arguments?.getString("terminals_json", null)?.let {
-      competitionTerminalListJsonAdapter.fromJson(it)?.let { jsonTerminalList ->
+      competitionRequestJsonAdapter.fromJson(it)?.let { jsonTerminalList ->
         terminalList.addAll(jsonTerminalList.TerminalList)
       }
     }

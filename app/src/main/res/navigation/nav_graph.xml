@@ -45,10 +45,7 @@
         android:name="ru.styxheim.wsang_admin.CompetitionTerminalsFragment"
         android:label="fragment_competition_terminals"
         tools:layout="@layout/fragment_competition_terminals" >
-        <argument android:name="competition_json"
-            app:argType="string" />
-        <argument
-            android:name="terminals_json"
+        <argument android:name="competition_response_json"
             app:argType="string" />
     </fragment>
 </navigation>

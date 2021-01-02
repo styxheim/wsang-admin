@@ -28,8 +28,8 @@ class CompetitionFragment : Fragment() {
   private val moshi: Moshi = Moshi.Builder().build()
   private val competitionJsonAdapter:
       JsonAdapter<AdminAPI.RaceStatus> = moshi.adapter(AdminAPI.RaceStatus::class.java)
-  private val competitionTerminalListJsonAdapter =
-    moshi.adapter(AdminAPI.CompetitionTerminalList::class.java)
+  private val competitionResponseJsonAdapter =
+    moshi.adapter(AdminAPI.CompetitionResponse::class.java)
   private var competition: AdminAPI.RaceStatus = AdminAPI.RaceStatus(SyncPoint = 0)
   private var terminalList: MutableList<AdminAPI.TerminalStatus> = mutableListOf()
   private var competitionDisciplineAdapter: CompetitionDisciplineAdapter? = null
@@ -140,14 +140,14 @@ class CompetitionFragment : Fragment() {
     arguments = bundle
   }
 
-  private fun loadCompetitionTerminals() {
+  private fun loadCompetition() {
     val loadingDialogBuilder = AlertDialog.Builder(requireContext()).setTitle(R.string.updating)
     var loadingDialog: AlertDialog? = null
 
     loadingDialogBuilder.setMessage(R.string.competition_loading)
     loadingDialogBuilder.setNeutralButton(R.string.accept) { _, _ -> }
 
-    transport?.getCompetitionTerminals(
+    transport?.getCompetition(
       competition.CompetitionId,
       onBegin = { activity?.runOnUiThread { loadingDialog = loadingDialogBuilder.show() } },
       onEnd = { activity?.runOnUiThread { loadingDialog?.dismiss() } },
@@ -306,16 +306,17 @@ class CompetitionFragment : Fragment() {
     }
 
     binding!!.terminalsPlate.setOnClickListener {
-      val competitionJson = competitionJsonAdapter.toJson(competition)
-      val terminalsJson =
-        competitionTerminalListJsonAdapter.toJson(AdminAPI.CompetitionTerminalList(terminalList))
-      val action =
-        CompetitionFragmentDirections.actionToTerminalsFragment(competitionJson, terminalsJson)
+      val competitionResponse = AdminAPI.CompetitionResponse(
+        Competition = competition,
+        TerminalList = terminalList
+      )
+      val competitionResponseJson = competitionResponseJsonAdapter.toJson(competitionResponse)
+      val action = CompetitionFragmentDirections.actionToTerminalsFragment(competitionResponseJson)
 
       findNavController().navigate(action)
     }
 
     binding!!.terminals.text = terminalList.count().toString()
-    loadCompetitionTerminals()
+    loadCompetition()
   }
 }

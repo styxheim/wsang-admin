@@ -83,7 +83,8 @@ object AdminAPI {
   )
 
   @JsonClass(generateAdapter = true)
-  data class CompetitionTerminalList(
+  data class CompetitionResponse(
+    val Competition: RaceStatus = RaceStatus(SyncPoint = null),
     val TerminalList: MutableList<TerminalStatus> = mutableListOf()
   ) : AdminResponse(Error = null)
 
