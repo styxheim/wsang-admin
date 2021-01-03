@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import ru.styxheim.wsang_admin.databinding.CompetitionDisciplineItemBinding
 import ru.styxheim.wsang_admin.databinding.DisciplineGateItemBinding
@@ -54,6 +55,19 @@ class CompetitionDisciplineItemHolder(
 
   @SuppressLint("InflateParams")
   fun bind(competitionGates: List<Int>, discipline: AdminAPI.Discipline) {
+    val colorGateSelected =
+      ResourcesCompat.getColor(
+        binding.root.context.resources,
+        R.color.gate_selected,
+        binding.root.context.theme
+      )
+    val colorGateUnselected =
+      ResourcesCompat.getColor(
+        binding.root.context.resources,
+        R.color.gate_unselected,
+        binding.root.context.theme
+      )
+
     binding.disciplineName.text = discipline.Name
     binding.disciplineName.setOnClickListener { onClickName(discipline.Id) }
     binding.disciplinePlate.setOnClickListener { onClickName(discipline.Id) }
@@ -61,18 +75,17 @@ class CompetitionDisciplineItemHolder(
     competitionGates.forEach { competitionGateNo ->
       val inflater = LayoutInflater.from(itemView.context)
       val view_binding = DisciplineGateItemBinding.inflate(inflater, null, false)
-      var gateView: TextView? = null
+      val gateView: TextView = view_binding.gate
 
-      /* TODO: replace to style instead two buttons */
       discipline.Gates.find { disciplineGateNo -> disciplineGateNo == competitionGateNo }?.let {
-        gateView = view_binding.gateSelected
+        gateView.setBackgroundColor(colorGateSelected)
       } ?: run {
-        gateView = view_binding.gateUnselected
+        gateView.setBackgroundColor(colorGateUnselected)
       }
 
-      (gateView?.parent as ViewGroup).removeView(gateView)
-      gateView?.text = competitionGateNo.toString()
-      gateView?.setOnClickListener { onClickGate(discipline.Id, competitionGateNo) }
+      (gateView.parent as ViewGroup).removeView(gateView)
+      gateView.text = competitionGateNo.toString()
+      gateView.setOnClickListener { onClickGate(discipline.Id, competitionGateNo) }
       binding.gatesList.addView(gateView)
     }
   }
