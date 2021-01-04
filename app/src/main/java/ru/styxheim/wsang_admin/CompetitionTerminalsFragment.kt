@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.preference.PreferenceManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.squareup.moshi.Moshi
 import ru.styxheim.wsang_admin.databinding.FragmentCompetitionTerminalsBinding
 
@@ -18,6 +19,8 @@ class CompetitionTerminalsFragment : Fragment() {
   private val moshi: Moshi = Moshi.Builder().build()
   private val competitionRequestJsonAdapter =
     moshi.adapter(AdminAPI.Response.Competition::class.java)
+
+  private var terminalsAdapter: TerminalsAdapter? = null
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -93,7 +96,19 @@ class CompetitionTerminalsFragment : Fragment() {
             }
 
             terminalChooseBuilder.setNegativeButton(R.string.cancel) { _, _ -> }
-            terminalChooseBuilder.setPositiveButton(R.string.save) { _, _ -> /* TODO */ }
+            terminalChooseBuilder.setPositiveButton(R.string.save) { _, _ ->
+              for ((index, terminalName) in nameList.withIndex()) {
+                if (!isCheckedList[index]) continue
+                terminalList.add(
+                  AdminAPI.TerminalStatus(
+                    TimeStamp = 0,
+                    TerminalString = terminalName,
+                    Disciplines = mutableListOf()
+                  )
+                )
+              }
+              terminalsAdapter?.notifyDataSetChanged()
+            }
           }
           terminalChooseBuilder.show()
         }
@@ -101,10 +116,35 @@ class CompetitionTerminalsFragment : Fragment() {
     )
   }
 
+  private fun setupTerminalsAdapter() {
+    terminalsAdapter = TerminalsAdapter(competition, terminalList)
+
+    terminalsAdapter!!.onDisciplineGatesChange = { terminalString, disciplineGates ->
+      val terminal = terminalList.find { it.TerminalString == terminalString }!!
+
+      terminal.Disciplines.clear()
+      competition.Disciplines?.forEach { competitionDiscipline ->
+        terminal.Disciplines.add(
+          AdminAPI.TerminalDiscipline(
+            Id = competitionDiscipline.Id,
+            disciplineGates.toMutableList()
+          )
+        )
+      }
+      terminalsAdapter!!.notifyDataSetChanged()
+    }
+
+    binding?.terminals?.apply {
+      layoutManager = LinearLayoutManager(activity)
+      adapter = terminalsAdapter
+    }
+  }
+
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
     binding!!.terminalsAdd.setOnClickListener {
       selectTerminalsFromList()
     }
+    setupTerminalsAdapter()
   }
 }
