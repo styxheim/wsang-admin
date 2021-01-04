@@ -106,7 +106,7 @@ class CompetitionTerminalsFragment : Fragment() {
 
           terminalStatusList =
             terminalStatusList.filter { terminalStatus ->
-              terminalList.find { terminal -> terminal.TerminalString == terminalStatus.TerminalId } == null
+              terminalList.find { terminal -> terminal.TerminalId == terminalStatus.TerminalId } == null
             }
           terminalStatusList = terminalStatusList.sortedByDescending { it.TimeStamp }
 
@@ -132,7 +132,7 @@ class CompetitionTerminalsFragment : Fragment() {
                 terminalList.add(
                   AdminAPI.TerminalStatus(
                     TimeStamp = 0,
-                    TerminalString = terminalName,
+                    TerminalId = terminalName,
                     Disciplines = mutableListOf()
                   )
                 )
@@ -150,7 +150,7 @@ class CompetitionTerminalsFragment : Fragment() {
     terminalsAdapter = TerminalsAdapter(competition, terminalList)
 
     terminalsAdapter!!.onDisciplineGatesChange = { terminalString, disciplineGates ->
-      val terminal = terminalList.find { it.TerminalString == terminalString }!!
+      val terminal = terminalList.find { it.TerminalId == terminalString }!!
 
       terminal.Disciplines.clear()
       competition.Disciplines?.forEach { competitionDiscipline ->

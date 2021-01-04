@@ -67,7 +67,7 @@ object AdminAPI {
   @JsonClass(generateAdapter = true)
   data class TerminalStatus(
     val TimeStamp: Long,
-    val TerminalString: String,
+    val TerminalId: String,
     val Disciplines: MutableList<TerminalDiscipline> = mutableListOf(),
     val Activity: TerminalActivity? = null
   )

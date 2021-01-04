@@ -70,7 +70,7 @@ class TerminalsItemHolder(
         gateViewBinding.gate.setBackgroundColor(colorGateUnselected!!)
       }
 
-      binding.terminalName.text = terminal.TerminalString
+      binding.terminalName.text = terminal.TerminalId
       (gateViewBinding.gate.parent as ViewGroup).removeView(gateViewBinding.gate)
       gateViewBinding.gate.text = gateNo.toString()
       gateViewBinding.gate.setOnClickListener {
@@ -80,7 +80,7 @@ class TerminalsItemHolder(
           terminalGates.add(gateNo)
         }
 
-        onClickGate(terminal.TerminalString, terminalGates)
+        onClickGate(terminal.TerminalId, terminalGates)
       }
       binding.gatesList.addView(gateViewBinding.gate)
     }
