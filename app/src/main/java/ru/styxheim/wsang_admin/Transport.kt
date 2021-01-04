@@ -143,7 +143,7 @@ class Transport(private val sharedPreferences: SharedPreferences) {
     areq.Credentials = getCredentials()
     callCompetitionTerminalsSet = enqueue(
       callCompetitionTerminalsSet,
-      "/api/admin/competition/set/${competitionId}",
+      "/api/admin/competition/terminals/set/${competitionId}",
       areq,
       { source -> adminResponseJsonAdapter.fromJson(source) },
       onBegin,
