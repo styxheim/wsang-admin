@@ -34,10 +34,10 @@ class Transport(private val sharedPreferences: SharedPreferences) {
     return AdminAPI.Credentials(TerminalString = terminalString, SecureKey = secureKey)
   }
 
-  private fun <T : AdminAPI.AdminResponse, TReq : AdminAPI.AdminRequest> enqueue(
+  private fun <T : AdminAPI.AdminResponse> enqueue(
     previousCall: Call?,
     httpResource: String,
-    apiRequest: TReq,
+    requestJsonAdapter: () -> String,
     responseJsonAdapter: (BufferedSource) -> T?,
     onBegin: () -> Unit,
     onEnd: () -> Unit,
@@ -45,7 +45,7 @@ class Transport(private val sharedPreferences: SharedPreferences) {
     onResult: (adminResponse: T) -> Unit
   ): Call? {
     val serverAddress: String = sharedPreferences.getString("server_address", null) ?: return null
-    val body = adminRequestJsonAdapter.toJson(apiRequest).toString().toRequestBody(mediaType)
+    val body = requestJsonAdapter().toRequestBody(mediaType)
     val httpRequest = Request.Builder()
       .url("${serverScheme}${serverAddress}${httpResource}")
       .post(body)
@@ -99,7 +99,7 @@ class Transport(private val sharedPreferences: SharedPreferences) {
     callTerminalsGet = enqueue(
       callTerminalsGet,
       "/api/admin/terminal/list",
-      areq,
+      { adminRequestJsonAdapter.toJson(areq) },
       { source -> getTerminalsJsonAdapter.fromJson(source) },
       onBegin = onBegin,
       onEnd = onEnd,
@@ -117,17 +117,16 @@ class Transport(private val sharedPreferences: SharedPreferences) {
   ) {
     val areq = AdminAPI.AdminRequest(Credentials = getCredentials())
 
-    callCompetitionGet =
-      enqueue(
-        callCompetitionGet,
-        "/api/admin/comeptition/get/${competitionId}",
-        areq,
-        { source -> getCompetitionJsonAdapter.fromJson(source) },
-        onBegin,
-        onEnd,
-        onFail,
-        onResult
-      )
+    callCompetitionGet = enqueue(
+      callCompetitionGet,
+      "/api/admin/comeptition/get/${competitionId}",
+      { adminRequestJsonAdapter.toJson(areq) },
+      { source -> getCompetitionJsonAdapter.fromJson(source) },
+      onBegin,
+      onEnd,
+      onFail,
+      onResult
+    )
   }
 
   fun setCompetitionTerminals(
@@ -144,7 +143,7 @@ class Transport(private val sharedPreferences: SharedPreferences) {
     callCompetitionTerminalsSet = enqueue(
       callCompetitionTerminalsSet,
       "/api/admin/competition/terminals/set/${competitionId}",
-      areq,
+      { adminRequestJsonAdapter.toJson(areq) },
       { source -> adminResponseJsonAdapter.fromJson(source) },
       onBegin,
       onEnd,
@@ -162,10 +161,11 @@ class Transport(private val sharedPreferences: SharedPreferences) {
   ) {
     val areq = AdminAPI.AdminRequest(Credentials = getCredentials(), Competition = competition)
 
+    /* TODO: use a special AdminAPI.Request.CompetitionSet instead AdminAPI.AdminRequest */
     callCompetitionSet = enqueue(
       callCompetitionSet,
       "/api/admin/competition/set/${competition.CompetitionId}",
-      areq,
+      { adminRequestJsonAdapter.toJson(areq) },
       { source -> adminResponseJsonAdapter.fromJson(source) },
       onBegin,
       onEnd,
@@ -185,7 +185,7 @@ class Transport(private val sharedPreferences: SharedPreferences) {
     callCompetitionListGet = enqueue(
       callCompetitionListGet,
       "/api/admin/competition/list",
-      areq,
+      { adminRequestJsonAdapter.toJson(areq) },
       { source -> competitionListJsonAdapter.fromJson(source) },
       onBegin,
       onEnd,
