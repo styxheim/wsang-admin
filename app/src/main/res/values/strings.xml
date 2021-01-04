@@ -51,6 +51,9 @@
     <string name="terminals_loading">Load terminal list…</string>
     <string name="terminals_loading_error">Error while terminal list load</string>
     <string name="terminal_list_is_empty">Server has no connected terminals</string>
+    <string name="terminals_saving">Save terminal\'s settings…</string>
+    <string name="terminals_saving_error">Error while terminal\'s settings save</string>
+    <string name="terminals_saving_success">Terminal\'s settings successfully saved</string>
 
     <!-- competition fragment -->
     <string name="competition_id">Id</string>

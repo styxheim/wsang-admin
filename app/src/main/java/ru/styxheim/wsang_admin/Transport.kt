@@ -26,6 +26,7 @@ class Transport(private val sharedPreferences: SharedPreferences) {
   private val getTerminalsJsonAdapter =
     moshi.adapter(AdminAPI.Response.TerminalActivityList::class.java)
   private val getCompetitionJsonAdapter = moshi.adapter(AdminAPI.Response.Competition::class.java)
+  private val setTerminalsAdapter = moshi.adapter(AdminAPI.Request.TerminalsSet::class.java)
 
   private fun getCredentials(): AdminAPI.Credentials {
     val terminalString: String = sharedPreferences.getString("terminal_string", "")!!
@@ -143,7 +144,7 @@ class Transport(private val sharedPreferences: SharedPreferences) {
     callCompetitionTerminalsSet = enqueue(
       callCompetitionTerminalsSet,
       "/api/admin/competition/terminals/set/${competitionId}",
-      { adminRequestJsonAdapter.toJson(areq) },
+      { setTerminalsAdapter.toJson(areq) },
       { source -> adminResponseJsonAdapter.fromJson(source) },
       onBegin,
       onEnd,
