@@ -90,14 +90,7 @@ class CompetitionTerminalsFragment : Fragment() {
       onBegin = { dialog = dialogBuilder.show() },
       onEnd = { dialog?.dismiss() },
       onFail = { message ->
-        activity?.runOnUiThread {
-          val failDialogBuilder = AlertDialog.Builder(requireContext())
-
-          failDialogBuilder.setTitle(R.string.terminals_loading_error)
-          failDialogBuilder.setMessage(message)
-          failDialogBuilder.setNeutralButton(R.string.accept) { _, _ -> }
-          failDialogBuilder.show()
-        }
+        activity?.runOnUiThread { showInfoDialog(R.string.terminals_loading_error, message) }
       },
       onResult = { terminalActivityList: AdminAPI.Response.TerminalActivityList ->
         activity?.runOnUiThread {
