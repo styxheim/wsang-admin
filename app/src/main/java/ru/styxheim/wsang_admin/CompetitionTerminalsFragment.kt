@@ -87,8 +87,8 @@ class CompetitionTerminalsFragment : Fragment() {
     dialogBuilder.setMessage(R.string.terminals_loading)
 
     transport?.getTerminalsActivities(
-      onBegin = { dialog = dialogBuilder.show() },
-      onEnd = { dialog?.dismiss() },
+      onBegin = { activity?.runOnUiThread { dialog = dialogBuilder.show() } },
+      onEnd = { activity?.runOnUiThread { dialog?.dismiss() } },
       onFail = { message ->
         activity?.runOnUiThread { showInfoDialog(R.string.terminals_loading_error, message) }
       },
