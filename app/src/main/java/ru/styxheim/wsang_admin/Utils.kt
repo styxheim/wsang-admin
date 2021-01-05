@@ -9,9 +9,9 @@ object Utils {
     val infoDialog = AlertDialog.Builder(context)
 
     infoDialog.setTitle(title)
-    infoDialog.show()
     infoDialog.setMessage(message)
     infoDialog.setNeutralButton(R.string.accept) { _, _ -> }
+    infoDialog.show()
   }
 
   fun showInfoDialog(context: Context, @StringRes title: Int, message: String) {
