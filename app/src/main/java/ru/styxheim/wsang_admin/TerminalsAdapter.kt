@@ -60,6 +60,7 @@ class TerminalsItemHolder(
     }
 
     binding.gatesList.removeAllViews()
+    binding.terminalName.text = terminal.TerminalId
 
     if (competition.Disciplines?.isEmpty() == true) {
       /* do not display gates if competition contain no disciplines */
@@ -76,7 +77,6 @@ class TerminalsItemHolder(
         gateViewBinding.gate.setBackgroundColor(colorGateUnselected!!)
       }
 
-      binding.terminalName.text = terminal.TerminalId
       (gateViewBinding.gate.parent as ViewGroup).removeView(gateViewBinding.gate)
       gateViewBinding.gate.text = gateNo.toString()
       gateViewBinding.gate.setOnClickListener {
