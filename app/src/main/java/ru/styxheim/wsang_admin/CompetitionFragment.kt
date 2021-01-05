@@ -344,7 +344,7 @@ class CompetitionFragment : Fragment() {
     /* competition id */
     binding!!.competitionId.text = competition.CompetitionId.toString()
     /* timestamp */
-    binding!!.competitionId.text = competition.TimeStamp.toString()
+    binding!!.timestamp.text = competition.TimeStamp.toString()
     /* crews count */
     binding!!.crewsCount.text = getString(R.string.crews_count_null)
     competition.Crews?.let {
