@@ -264,21 +264,19 @@ class CompetitionFragment : Fragment() {
       },
       onResult = {
         activity?.runOnUiThread {
-          activity?.runOnUiThread {
-            Toast.makeText(
-              context,
-              "Successfull save",
-              Toast.LENGTH_SHORT
-            ).show()
-            if( isDisciplinesChanged ) {
-              syncCompetitionGatesToTerminals()
-              isDisciplinesChanged = false
-              saveCompetitionTerminals(
-                onEnd = { binding!!.competitionSave.isEnabled = true },
-                onSuccess = { loadCompetition() })
-            } else {
-              binding!!.competitionSave.isEnabled = true
-            }
+          Toast.makeText(
+            context,
+            "Successfull save",
+            Toast.LENGTH_SHORT
+          ).show()
+          if (isDisciplinesChanged) {
+            syncCompetitionGatesToTerminals()
+            isDisciplinesChanged = false
+            saveCompetitionTerminals(
+              onEnd = { binding!!.competitionSave.isEnabled = true },
+              onSuccess = { loadCompetition() })
+          } else {
+            binding!!.competitionSave.isEnabled = true
           }
         }
       }
