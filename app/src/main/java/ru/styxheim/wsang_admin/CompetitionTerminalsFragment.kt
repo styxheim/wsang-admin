@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.squareup.moshi.Moshi
@@ -70,11 +71,8 @@ class CompetitionTerminalsFragment : Fragment() {
       },
       onResult = {
         activity?.runOnUiThread {
-          Utils.showInfoDialog(
-            requireContext(),
-            R.string.updating,
-            R.string.terminals_saving_success
-          )
+          Toast.makeText(requireContext(), R.string.terminals_saving_success, Toast.LENGTH_SHORT)
+            .show()
         }
       })
   }

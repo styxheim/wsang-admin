@@ -231,7 +231,13 @@ class CompetitionFragment : Fragment() {
           Utils.showInfoDialog(requireContext(), R.string.updating, message)
         }
       },
-      onResult = { activity?.runOnUiThread { onSuccess() } }
+      onResult = {
+        activity?.runOnUiThread {
+          onSuccess()
+          Toast.makeText(requireContext(), R.string.terminals_saving_success, Toast.LENGTH_SHORT)
+            .show()
+        }
+      }
     )
   }
 
@@ -264,11 +270,8 @@ class CompetitionFragment : Fragment() {
       },
       onResult = {
         activity?.runOnUiThread {
-          Toast.makeText(
-            context,
-            "Successfull save",
-            Toast.LENGTH_SHORT
-          ).show()
+          Toast.makeText(requireContext(), R.string.competition_saving_success, Toast.LENGTH_SHORT)
+            .show()
           if (isDisciplinesChanged) {
             syncCompetitionGatesToTerminals()
             isDisciplinesChanged = false
