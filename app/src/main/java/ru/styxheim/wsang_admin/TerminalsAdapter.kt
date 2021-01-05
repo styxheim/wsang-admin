@@ -60,6 +60,12 @@ class TerminalsItemHolder(
     }
 
     binding.gatesList.removeAllViews()
+
+    if (competition.Disciplines?.isEmpty() == true) {
+      /* do not display gates if competition contain no disciplines */
+      return
+    }
+
     competitionGates.forEach { gateNo ->
       val gateViewBinding = DisciplineGateItemBinding.inflate(inflater, null, false)
 
