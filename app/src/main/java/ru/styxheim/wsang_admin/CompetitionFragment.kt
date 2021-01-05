@@ -35,6 +35,8 @@ class CompetitionFragment : Fragment() {
   private var terminalList: MutableList<AdminAPI.TerminalStatus> = mutableListOf()
   private var competitionDisciplineAdapter: CompetitionDisciplineAdapter? = null
 
+  /* 'true' if discipline is added or removed. Need for sync terminal's gates to discipline list */
+  private var isDisciplinesChanged: Boolean = false
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -111,7 +113,10 @@ class CompetitionFragment : Fragment() {
             Id = ((competition.Disciplines?.maxByOrNull { it -> it.Id })?.Id ?: 0) + 1,
           )
         },
-        setDiscipline = { discipline -> competition.Disciplines?.add(discipline) }
+        setDiscipline = { discipline ->
+          competition.Disciplines?.add(discipline)
+          isDisciplinesChanged = true
+        }
       )
     }
 
@@ -121,7 +126,10 @@ class CompetitionFragment : Fragment() {
           competition.Disciplines?.find { it.Id == id }!!
         },
         setDiscipline = { },
-        delDiscipline = { discipline -> competition.Disciplines?.remove(discipline) }
+        delDiscipline = { discipline ->
+          competition.Disciplines?.remove(discipline)
+          isDisciplinesChanged = true
+        }
       )
     }
     competitionDisciplineAdapter!!.setOnClickGate { disciplineId, gateId ->
@@ -175,6 +183,35 @@ class CompetitionFragment : Fragment() {
         }
       }
     )
+  }
+
+  /* Sync competition gates to terminals permissions:
+   * Protocol allows set different permissions to each discipline in terminals,
+   * but this ability do not need now and all terminal's disciplines must
+   * have equal set of gates
+   */
+  private fun syncCompetitionGatesToTerminals() {
+    terminalList.forEach { terminal ->
+      var terminalGates = if (terminal.Disciplines.isEmpty()) {
+        mutableListOf()
+      } else {
+        terminal.Disciplines[0].Gates.toMutableList()
+      }
+
+      /* remove gate number from terminal if gate removed from competition */
+      terminalGates = terminalGates.filter { gateNo ->
+        competition.Gates?.any { competitionGateNo -> gateNo == competitionGateNo } == true
+      }.toMutableList()
+
+      /* copy one set of gates to all disciplines */
+      terminal.Disciplines.clear()
+      competition.Disciplines?.forEach { discipline ->
+        val terminalDiscipline =
+          AdminAPI.TerminalDiscipline(Id = discipline.Id, Gates = terminalGates)
+
+        terminal.Disciplines.add(terminalDiscipline)
+      }
+    }
   }
 
   private fun saveCompetitionTerminals(onEnd: () -> Unit, onSuccess: () -> Unit) {
@@ -233,9 +270,15 @@ class CompetitionFragment : Fragment() {
               "Successfull save",
               Toast.LENGTH_SHORT
             ).show()
-            saveCompetitionTerminals(
-              onEnd = { binding!!.competitionSave.isEnabled = true },
-              onSuccess = { loadCompetition() })
+            if( isDisciplinesChanged ) {
+              syncCompetitionGatesToTerminals()
+              isDisciplinesChanged = false
+              saveCompetitionTerminals(
+                onEnd = { binding!!.competitionSave.isEnabled = true },
+                onSuccess = { loadCompetition() })
+            } else {
+              binding!!.competitionSave.isEnabled = true
+            }
           }
         }
       }
@@ -349,6 +392,7 @@ class CompetitionFragment : Fragment() {
         binding!!.gates,
         R.string.edit_gates
       )
+      isDisciplinesChanged = true
     }
     binding!!.gates.setOnClickListener { gatesOnClick() }
     binding!!.gatesPlate.setOnClickListener { gatesOnClick() }
