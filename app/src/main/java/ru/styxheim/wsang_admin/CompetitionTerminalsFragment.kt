@@ -6,7 +6,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.StringRes
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.squareup.moshi.Moshi
@@ -50,15 +49,6 @@ class CompetitionTerminalsFragment : Fragment() {
     binding = null
   }
 
-  private fun showInfoDialog(@StringRes title: Int, message: String) {
-    val failDialogBuilder = AlertDialog.Builder(requireContext())
-
-    failDialogBuilder.setTitle(title)
-    failDialogBuilder.setMessage(message)
-    failDialogBuilder.setNeutralButton(R.string.accept) { _, _ -> }
-    failDialogBuilder.show()
-  }
-
   private fun saveTerminals() {
     val dialogBuilder = AlertDialog.Builder(requireContext())
     var dialog: AlertDialog? = null
@@ -70,11 +60,21 @@ class CompetitionTerminalsFragment : Fragment() {
       onBegin = { activity?.runOnUiThread { dialog = dialogBuilder.show() } },
       onEnd = { activity?.runOnUiThread { dialog?.dismiss() } },
       onFail = { message ->
-        activity?.runOnUiThread { showInfoDialog(R.string.terminals_saving_error, message) }
+        activity?.runOnUiThread {
+          Utils.showInfoDialog(
+            requireContext(),
+            R.string.terminals_saving_error,
+            message
+          )
+        }
       },
       onResult = {
         activity?.runOnUiThread {
-          showInfoDialog(R.string.updating, getString(R.string.terminals_saving_success))
+          Utils.showInfoDialog(
+            requireContext(),
+            R.string.updating,
+            R.string.terminals_saving_success
+          )
         }
       })
   }
@@ -90,7 +90,13 @@ class CompetitionTerminalsFragment : Fragment() {
       onBegin = { activity?.runOnUiThread { dialog = dialogBuilder.show() } },
       onEnd = { activity?.runOnUiThread { dialog?.dismiss() } },
       onFail = { message ->
-        activity?.runOnUiThread { showInfoDialog(R.string.terminals_loading_error, message) }
+        activity?.runOnUiThread {
+          Utils.showInfoDialog(
+            requireContext(),
+            R.string.terminals_loading_error,
+            message
+          )
+        }
       },
       onResult = { terminalActivityList: AdminAPI.Response.TerminalActivityList ->
         activity?.runOnUiThread {

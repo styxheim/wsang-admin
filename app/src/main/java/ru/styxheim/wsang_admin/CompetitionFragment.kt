@@ -158,11 +158,11 @@ class CompetitionFragment : Fragment() {
       onEnd = { activity?.runOnUiThread { loadingDialog?.dismiss() } },
       onFail = { message ->
         activity?.runOnUiThread {
-          val errorDialog = AlertDialog.Builder(requireContext())
-
-          errorDialog.setTitle(R.string.competition_loading_error)
-          errorDialog.setMessage(message)
-          errorDialog.show()
+          Utils.showInfoDialog(
+            requireContext(),
+            R.string.competition_loading_error,
+            message
+          )
         }
       },
       onResult = { competitionTerminalList ->
@@ -201,11 +201,7 @@ class CompetitionFragment : Fragment() {
       },
       onFail = { message ->
         activity?.runOnUiThread {
-          val errorDialog = AlertDialog.Builder(requireContext())
-
-          errorDialog.setTitle(R.string.competition_saving_error)
-          errorDialog.setMessage(message)
-          errorDialog.show()
+          Utils.showInfoDialog(requireContext(), R.string.competition_saving_error, message)
         }
       },
       onResult = {
