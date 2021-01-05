@@ -177,6 +177,27 @@ class CompetitionFragment : Fragment() {
     )
   }
 
+  private fun saveCompetitionTerminals(onEnd: () -> Unit, onSuccess: () -> Unit) {
+    val savingDialogBuilder = AlertDialog.Builder(requireContext())
+    var savingDialog: AlertDialog? = null
+
+    savingDialogBuilder.setTitle(R.string.updating)
+    savingDialogBuilder.setMessage(R.string.terminals_saving)
+    savingDialogBuilder.setNeutralButton(R.string.accept) { _, _ -> }
+
+    transport?.setCompetitionTerminals(competition.CompetitionId,
+      terminalList,
+      onBegin = { activity?.runOnUiThread { savingDialog = savingDialogBuilder.show() } },
+      onEnd = { activity?.runOnUiThread { savingDialog?.dismiss(); onEnd() } },
+      onFail = { message ->
+        activity?.runOnUiThread {
+          Utils.showInfoDialog(requireContext(), R.string.updating, message)
+        }
+      },
+      onResult = { activity?.runOnUiThread { onSuccess() } }
+    )
+  }
+
   private fun saveCompetition() {
     val savingDialogBuilder = AlertDialog.Builder(requireContext())
     var savingDialog: AlertDialog? = null
@@ -195,12 +216,12 @@ class CompetitionFragment : Fragment() {
       },
       onEnd = {
         activity?.runOnUiThread {
-          binding!!.competitionSave.isEnabled = true
           savingDialog?.dismiss()
         }
       },
       onFail = { message ->
         activity?.runOnUiThread {
+          binding!!.competitionSave.isEnabled = true
           Utils.showInfoDialog(requireContext(), R.string.competition_saving_error, message)
         }
       },
@@ -212,7 +233,9 @@ class CompetitionFragment : Fragment() {
               "Successfull save",
               Toast.LENGTH_SHORT
             ).show()
-            loadCompetition()
+            saveCompetitionTerminals(
+              onEnd = { binding!!.competitionSave.isEnabled = true },
+              onSuccess = { loadCompetition() })
           }
         }
       }
