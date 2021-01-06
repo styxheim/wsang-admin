@@ -56,7 +56,7 @@
     <string name="terminals_saving_success">Terminal\'s settings successfully saved</string>
 
     <!-- competition fragment -->
-    <string name="competition_id">Id</string>
+    <string name="competition_name_edit">Edit competition name</string>
     <string name="timestamp">Creation time</string>
     <string name="gates_null">&lt;no gate&gt;</string>
     <string name="gates">Gates</string>

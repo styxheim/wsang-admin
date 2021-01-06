@@ -326,6 +326,30 @@ class CompetitionFragment : Fragment() {
     dialogBuilder.show()
   }
 
+  private fun updateStringWithDialog(
+    getEditString: () -> String,
+    setEditString: (message: String) -> Unit,
+    @StringRes title: Int
+  ) {
+    val editTextView = EditText(requireContext())
+    val dialogBuilder = AlertDialog.Builder(requireContext()).setTitle(title)
+      .setView(editTextView)
+
+    editTextView.isSingleLine = false
+    editTextView.setText(getEditString())
+
+    dialogBuilder.setPositiveButton(R.string.save) { _, _ ->
+      activity?.runOnUiThread {
+        setEditString(editTextView.text.toString())
+      }
+    }
+
+    dialogBuilder.setNegativeButton(R.string.cancel) { _, _ ->
+    }
+
+    dialogBuilder.show()
+  }
+
   private fun updateView() {
     if (isNewCompetition) {
       binding!!.terminalsPlate.visibility = View.GONE
@@ -344,8 +368,16 @@ class CompetitionFragment : Fragment() {
       }
     }
 
+    /* competition name */
+    activity?.title = getString(R.string.competition_unknown_value)
+    binding!!.competitionName.text = getString(R.string.competition_unknown_value)
+    if (competition.CompetitionName?.compareTo("") ?: 0 != 0) {
+      activity?.title = competition.CompetitionName
+      binding!!.competitionName.text = competition.CompetitionName
+    }
     /* competition id */
-    binding!!.competitionId.text = competition.CompetitionId.toString()
+    binding!!.competitionNameId.text =
+      getString(R.string.competition_id_title, competition.CompetitionId)
     /* timestamp */
     binding!!.timestamp.text = competition.TimeStamp.toString()
     /* crews count */
@@ -359,11 +391,6 @@ class CompetitionFragment : Fragment() {
       binding!!.penalties.text = competition.Penalties!!.joinToString()
     }
 
-    activity?.title = getString(R.string.competition_unknown_value)
-    if (competition.CompetitionName?.compareTo("") ?: 0 != 0) {
-      activity?.title = competition.CompetitionName
-    }
-
     binding!!.gates.text = getString(R.string.gates_null)
     if (competition.Gates!!.isNotEmpty()) {
       binding!!.gates.text = competition.Gates!!.joinToString()
@@ -374,6 +401,23 @@ class CompetitionFragment : Fragment() {
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
+
+    /* competition name */
+    val competitionNameOnClick = {
+      updateStringWithDialog(
+        { competition.CompetitionName ?: "" },
+        { message ->
+          binding?.competitionName?.text = message
+          competition.CompetitionName = message
+          saveCompetitionToBundle()
+          updateView()
+        },
+        R.string.competition_name_edit
+      )
+    }
+    binding!!.competitionName.setOnClickListener { competitionNameOnClick() }
+    binding!!.competitionNameId.setOnClickListener { competitionNameOnClick() }
+    binding!!.competitionNamePlate.setOnClickListener { competitionNameOnClick() }
 
     /* penalties */
     val penaltiesOnClick = {
