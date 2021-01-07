@@ -111,6 +111,9 @@ class CompetitionTerminalsFragment : Fragment() {
           if (terminalActivityList.TerminalList.isEmpty()) {
             terminalChooseBuilder.setMessage(R.string.terminal_list_is_empty)
             terminalChooseBuilder.setNeutralButton(R.string.accept) { _, _ -> }
+          } else if (terminalStatusList.isEmpty()) {
+            terminalChooseBuilder.setMessage(R.string.terminal_list_all_registered)
+            terminalChooseBuilder.setNeutralButton(R.string.accept) { _, _ -> }
           } else {
             val nameList = terminalStatusList.map { it.TerminalId }.toTypedArray()
             val isCheckedList = BooleanArray(nameList.size) { false }
