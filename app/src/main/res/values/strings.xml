@@ -54,6 +54,8 @@
     <string name="terminals_saving">Save terminal\'s settings…</string>
     <string name="terminals_saving_error">Error while terminal\'s settings save</string>
     <string name="terminals_saving_success">Terminal\'s settings successfully saved</string>
+    <string name="terminal_remove_title">Terminal remove</string>
+    <string name="terminal_remove_message">You want to remove \"%s\"?</string>
 
     <!-- competition fragment -->
     <string name="competition_name_edit">Edit competition name</string>

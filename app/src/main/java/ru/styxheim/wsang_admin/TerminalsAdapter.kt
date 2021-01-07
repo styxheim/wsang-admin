@@ -1,5 +1,6 @@
 package ru.styxheim.wsang_admin
 
+import android.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.res.ResourcesCompat
@@ -24,11 +25,15 @@ class TerminalsAdapter(
 
     return TerminalsItemHolder(holderBinding, onClickGate = { terminalString, disciplineGates ->
       onDisciplineGatesChange?.invoke(terminalString, disciplineGates)
-    })
+    },
+      onItemRemove = { position ->
+        terminals.removeAt(position)
+        notifyItemRemoved(position)
+      })
   }
 
   override fun onBindViewHolder(holder: TerminalsItemHolder, position: Int) {
-    holder.bind(competition, terminals[position])
+    holder.bind(position, competition, terminals[position])
   }
 
   override fun getItemCount(): Int = terminals.size
@@ -37,6 +42,7 @@ class TerminalsAdapter(
 class TerminalsItemHolder(
   private val binding: TerminalsItemBinding,
   private val onClickGate: (terminalString: String, disciplineGates: List<Int>) -> Unit,
+  private val onItemRemove: (position: Int) -> Unit,
 ) : RecyclerView.ViewHolder(binding.root) {
   private var colorGateSelected: Int? = null
   private var colorGateUnselected: Int? = null
@@ -50,7 +56,24 @@ class TerminalsItemHolder(
     }
   }
 
-  fun bind(competition: AdminAPI.RaceStatus, terminal: AdminAPI.TerminalStatus) {
+  private fun removeTerminalWithDialog(terminalString: String, onRemove: () -> Unit) {
+    val dialogBuilder = AlertDialog.Builder(binding.root.context)
+
+    dialogBuilder.setTitle(R.string.terminal_remove_title)
+    dialogBuilder.setMessage(
+      binding.root.context.resources.getString(
+        R.string.terminal_remove_message,
+        terminalString
+      )
+    )
+
+    dialogBuilder.setNegativeButton(R.string.cancel) { _, _ -> }
+    dialogBuilder.setPositiveButton(R.string.accept) { _, _ -> onRemove() }
+
+    dialogBuilder.show()
+  }
+
+  fun bind(position: Int, competition: AdminAPI.RaceStatus, terminal: AdminAPI.TerminalStatus) {
     val inflater = LayoutInflater.from(itemView.context)
     val competitionGates = competition.Gates?.toList() ?: listOf()
     val terminalGates = if (terminal.Disciplines.isEmpty()) {
@@ -61,6 +84,9 @@ class TerminalsItemHolder(
 
     binding.gatesList.removeAllViews()
     binding.terminalName.text = terminal.TerminalId
+    binding.terminalPlate.setOnClickListener {
+      removeTerminalWithDialog(terminal.TerminalId, onRemove = { onItemRemove(position) })
+    }
 
     if (competition.Disciplines?.isEmpty() == true) {
       /* do not display gates if competition contain no disciplines */
