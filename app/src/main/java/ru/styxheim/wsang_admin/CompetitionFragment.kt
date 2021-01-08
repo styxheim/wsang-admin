@@ -157,6 +157,7 @@ class CompetitionFragment : Fragment() {
     val loadingDialogBuilder = AlertDialog.Builder(requireContext()).setTitle(R.string.updating)
     var loadingDialog: AlertDialog? = null
 
+    loadingDialogBuilder.setCancelable(false)
     loadingDialogBuilder.setMessage(R.string.competition_loading)
     loadingDialogBuilder.setNeutralButton(R.string.accept) { _, _ -> }
 
@@ -218,6 +219,7 @@ class CompetitionFragment : Fragment() {
     val savingDialogBuilder = AlertDialog.Builder(requireContext())
     var savingDialog: AlertDialog? = null
 
+    savingDialogBuilder.setCancelable(false)
     savingDialogBuilder.setTitle(R.string.updating)
     savingDialogBuilder.setMessage(R.string.terminals_saving)
     savingDialogBuilder.setNeutralButton(R.string.accept) { _, _ -> }
@@ -245,6 +247,7 @@ class CompetitionFragment : Fragment() {
     val savingDialogBuilder = AlertDialog.Builder(requireContext())
     var savingDialog: AlertDialog? = null
 
+    savingDialogBuilder.setCancelable(false)
     savingDialogBuilder.setTitle(R.string.updating)
     savingDialogBuilder.setMessage(R.string.competition_saving)
     savingDialogBuilder.setNeutralButton(R.string.accept) { _, _ -> }

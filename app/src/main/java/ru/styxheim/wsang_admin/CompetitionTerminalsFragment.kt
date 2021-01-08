@@ -54,6 +54,7 @@ class CompetitionTerminalsFragment : Fragment() {
     val dialogBuilder = AlertDialog.Builder(requireContext())
     var dialog: AlertDialog? = null
 
+    dialogBuilder.setCancelable(false)
     dialogBuilder.setTitle(R.string.updating)
     dialogBuilder.setMessage(R.string.terminals_saving)
 
@@ -81,6 +82,7 @@ class CompetitionTerminalsFragment : Fragment() {
     val dialogBuilder = AlertDialog.Builder(requireContext())
     var dialog: AlertDialog? = null
 
+    dialogBuilder.setCancelable(false)
     dialogBuilder.setTitle(R.string.updating)
     dialogBuilder.setMessage(R.string.terminals_loading)
 
