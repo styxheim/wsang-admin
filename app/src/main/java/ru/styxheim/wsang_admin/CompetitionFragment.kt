@@ -174,12 +174,14 @@ class CompetitionFragment : Fragment() {
           )
         }
       },
-      onResult = { competitionTerminalList ->
+      onResult = { competitionResponse ->
         activity?.runOnUiThread {
+          competition = competitionResponse.Competition
           terminalList.clear()
-          terminalList.addAll(competitionTerminalList.TerminalList)
+          terminalList.addAll(competitionResponse.TerminalList)
           binding!!.terminals.text = terminalList.count().toString()
           isNewCompetition = false
+          saveCompetitionToBundle()
           updateView()
         }
       }

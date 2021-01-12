@@ -115,7 +115,7 @@ class Transport(private val sharedPreferences: SharedPreferences) {
     onBegin: () -> Unit,
     onEnd: () -> Unit,
     onFail: (message: String) -> Unit,
-    onResult: (terminalList: AdminAPI.Response.Competition) -> Unit
+    onResult: (competitionResponse: AdminAPI.Response.Competition) -> Unit
   ) {
     val areq = AdminAPI.AdminRequest(Credentials = getCredentials())
 
