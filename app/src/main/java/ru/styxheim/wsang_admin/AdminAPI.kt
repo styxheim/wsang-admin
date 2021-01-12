@@ -65,10 +65,18 @@ object AdminAPI {
   )
 
   @JsonClass(generateAdapter = true)
+  data class TerminalPermissions(
+    val Read: Boolean = false,
+    val Write: Boolean = false,
+    val Admin: Boolean = false
+  )
+
+  @JsonClass(generateAdapter = true)
   data class TerminalStatus(
     val TimeStamp: Long,
     val TerminalId: String,
     val Disciplines: MutableList<TerminalDiscipline> = mutableListOf(),
+    val Permissions: TerminalPermissions = TerminalPermissions(),
     val Activity: TerminalActivity? = null
   )
 
