@@ -283,6 +283,7 @@ class CompetitionFragment : Fragment() {
               onSuccess = { loadCompetition() })
           } else {
             binding!!.competitionSave.isEnabled = true
+            loadCompetition()
           }
         }
       }
