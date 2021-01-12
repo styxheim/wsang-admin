@@ -388,7 +388,7 @@ class CompetitionFragment : Fragment() {
             onEnd = {
               activity?.runOnUiThread {
                 binding!!.wipeButton.isEnabled = true
-                savingDialog!!.dismiss()
+                savingDialog?.dismiss()
               }
             },
             onFail = { message ->
