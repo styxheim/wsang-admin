@@ -135,6 +135,11 @@ class CompetitionTerminalsFragment : Fragment() {
                   AdminAPI.TerminalStatus(
                     TimeStamp = 0,
                     TerminalId = terminalName,
+                    Permissions = AdminAPI.TerminalPermissions(
+                      Read = true,
+                      Write = true,
+                      Admin = false
+                    ),
                     Disciplines = mutableListOf()
                   )
                 )
