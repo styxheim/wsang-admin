@@ -16,6 +16,7 @@ class Transport(private val sharedPreferences: SharedPreferences) {
   private var callTerminalsGet: Call? = null
   private var callCompetitionGet: Call? = null
   private var callCompetitionTerminalsSet: Call? = null
+  private var callWipeCompetition: Call? = null
 
   private val httpClient = OkHttpClient()
   private val moshi: Moshi = Moshi.Builder().build()
@@ -192,6 +193,27 @@ class Transport(private val sharedPreferences: SharedPreferences) {
       onEnd,
       onFail,
       onResult
+    )
+  }
+
+  fun wipeCompetition(
+    competitionId: Long,
+    onBegin: () -> Unit,
+    onEnd: () -> Unit,
+    onFail: (message: String) -> Unit,
+    onResult: () -> Unit
+  ) {
+    val areq = AdminAPI.AdminRequest(Credentials = getCredentials())
+
+    callWipeCompetition = enqueue(
+      callWipeCompetition,
+      "/api/admin/competition/wipe/${competitionId}",
+      { adminRequestJsonAdapter.toJson(areq) },
+      { source -> competitionListJsonAdapter.fromJson(source) },
+      onBegin,
+      onEnd,
+      onFail,
+      { onResult() }
     )
   }
 }
