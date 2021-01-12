@@ -82,6 +82,18 @@
     <string name="competition_saving">Save competition…</string>
     <string name="competition_saving_error">Error shiw save competition</string>
     <string name="competition_saving_success">Competition saved</string>
+    <string name="competition_control">Control</string>
+    <string name="competition_wipe">Wipe</string>
+    <string name="competition_set_default">As Default</string>
+    <string name="competition_wipe_dialog_title">Wipe competition</string>
+    <string name="competition_wipe_dialog_message">You want remove all competition results?</string>
+    <string name="competition_set_default_dialog_title">Set competition to default</string>
+    <string name="competition_set_default_dialog_message">If you agree, all new terminals will connect to this competition</string>
+
+    <!-- annoying dialog -->
+    <string name="are_you_sure">Are you sure?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 
     <!-- discipline list -->
     <string name="discipline_name_null">&lt;unnamed&gt;</string>

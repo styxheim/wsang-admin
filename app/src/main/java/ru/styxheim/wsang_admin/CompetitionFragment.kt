@@ -353,9 +353,89 @@ class CompetitionFragment : Fragment() {
     dialogBuilder.show()
   }
 
+  private fun annoyingDialog(title: String, onYes: () -> Unit, onNo: () -> Unit) {
+    val dialogBuilder = AlertDialog.Builder(requireContext())
+
+    dialogBuilder.setTitle(title)
+    dialogBuilder.setMessage(R.string.are_you_sure)
+    dialogBuilder.setNegativeButton(R.string.no) { _, _ -> onNo() }
+    dialogBuilder.setPositiveButton(R.string.yes) { _, _ -> onYes() }
+    dialogBuilder.show()
+  }
+
+  private fun wipeWithDialog() {
+    val dialogBuilder = AlertDialog.Builder(requireContext())
+    val savingDialogBuilder = AlertDialog.Builder(requireContext())
+    var savingDialog: AlertDialog? = null
+
+    savingDialogBuilder.setCancelable(false)
+    savingDialogBuilder.setTitle(R.string.updating)
+    savingDialogBuilder.setMessage(R.string.competition_saving)
+
+    dialogBuilder.setTitle(R.string.competition_wipe_dialog_title)
+    dialogBuilder.setMessage(R.string.competition_wipe_dialog_message)
+    dialogBuilder.setNegativeButton(R.string.no) { _, _ -> }
+    dialogBuilder.setPositiveButton(R.string.yes) { _, _ ->
+      binding!!.wipeButton.isEnabled = false
+      annoyingDialog(
+        getString(R.string.competition_wipe_dialog_title),
+        onYes = {
+          transport!!.wipeCompetition(competition.CompetitionId,
+            onBegin = { activity?.runOnUiThread { savingDialog = savingDialogBuilder.show() } },
+            onEnd = {
+              activity?.runOnUiThread {
+                binding!!.wipeButton.isEnabled = true
+                savingDialog!!.dismiss()
+              }
+            },
+            onFail = { message ->
+              activity?.runOnUiThread {
+                Utils.showInfoDialog(requireContext(), R.string.competition_saving_error, message)
+              }
+            },
+            onResult = { activity?.runOnUiThread { loadCompetition() } })
+        },
+        onNo = { binding!!.wipeButton.isEnabled = true })
+    }
+    dialogBuilder.show()
+  }
+
+  private fun setDefaultWithDialog() {
+    val dialogBuilder = AlertDialog.Builder(requireContext())
+    val savingDialogBuilder = AlertDialog.Builder(requireContext())
+    var savingDialog: AlertDialog? = null
+
+    savingDialogBuilder.setCancelable(false)
+    savingDialogBuilder.setTitle(R.string.updating)
+    savingDialogBuilder.setMessage(R.string.competition_saving)
+
+    dialogBuilder.setTitle(R.string.competition_set_default_dialog_title)
+    dialogBuilder.setMessage(R.string.competition_set_default_dialog_message)
+    dialogBuilder.setNegativeButton(R.string.no) { _, _ -> }
+    dialogBuilder.setPositiveButton(R.string.yes) { _, _ ->
+      binding!!.setDefaultButton.isEnabled = false
+      transport!!.setDefaultCompetition(competition.CompetitionId,
+        onBegin = { activity?.runOnUiThread { savingDialog = savingDialogBuilder.show() } },
+        onEnd = {
+          activity?.runOnUiThread {
+            binding!!.setDefaultButton.isEnabled = true
+            savingDialog?.dismiss()
+          }
+        },
+        onFail = { message ->
+          activity?.runOnUiThread {
+            Utils.showInfoDialog(requireContext(), R.string.competition_saving_error, message)
+          }
+        },
+        onResult = { activity?.runOnUiThread { loadCompetition() } })
+    }
+    dialogBuilder.show()
+  }
+
   private fun updateView() {
     if (isNewCompetition) {
       binding!!.terminalsPlate.visibility = View.GONE
+      binding!!.competitionControlPlate.visibility = View.GONE
     } else {
       binding!!.terminalsPlate.visibility = View.VISIBLE
       binding!!.terminalsPlate.setOnClickListener {
@@ -369,6 +449,9 @@ class CompetitionFragment : Fragment() {
 
         findNavController().navigate(action)
       }
+
+      binding!!.wipeButton.setOnClickListener { wipeWithDialog() }
+      binding!!.setDefaultButton.setOnClickListener { setDefaultWithDialog() }
     }
 
     /* competition name */
