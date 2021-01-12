@@ -216,4 +216,25 @@ class Transport(private val sharedPreferences: SharedPreferences) {
       { onResult() }
     )
   }
+
+  fun setDefaultCompetition(
+    competitionId: Long,
+    onBegin: () -> Unit,
+    onEnd: () -> Unit,
+    onFail: (message: String) -> Unit,
+    onResult: () -> Unit
+  ) {
+    val areq = AdminAPI.AdminRequest(Credentials = getCredentials())
+
+    callWipeCompetition = enqueue(
+      callWipeCompetition,
+      "/api/admin/competition/set-default/${competitionId}",
+      { adminRequestJsonAdapter.toJson(areq) },
+      { source -> competitionListJsonAdapter.fromJson(source) },
+      onBegin,
+      onEnd,
+      onFail,
+      { onResult() }
+    )
+  }
 }
