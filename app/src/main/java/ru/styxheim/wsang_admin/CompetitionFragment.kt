@@ -455,6 +455,7 @@ class CompetitionFragment : Fragment() {
 
       binding!!.wipeButton.setOnClickListener { wipeWithDialog() }
       binding!!.setDefaultButton.setOnClickListener { setDefaultWithDialog() }
+      setupDisciplineAdapter()
     }
 
     /* competition name */
