@@ -8,6 +8,9 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.styxheim.wsang_admin.databinding.DisciplineGateItemBinding
 import ru.styxheim.wsang_admin.databinding.TerminalsItemBinding
 
+const val GATE_START: Int = -2
+const val GATE_FINISH: Int = -3
+
 class TerminalsAdapter(
   private val competition: AdminAPI.RaceStatus,
   private val terminals: MutableList<AdminAPI.TerminalStatus>
@@ -73,15 +76,26 @@ class TerminalsItemHolder(
     dialogBuilder.show()
   }
 
+  private fun getGateName(gateNo: Int): String {
+    if (gateNo == GATE_FINISH) {
+      return binding.root.resources.getString(R.string.gate_finish)
+    } else if (gateNo == GATE_START) {
+      return binding.root.resources.getString(R.string.gate_start)
+    }
+    return gateNo.toString()
+  }
+
   fun bind(position: Int, competition: AdminAPI.RaceStatus, terminal: AdminAPI.TerminalStatus) {
     val inflater = LayoutInflater.from(itemView.context)
-    val competitionGates = competition.Gates?.toList() ?: listOf()
+    val competitionGates = competition.Gates?.toMutableList() ?: mutableListOf()
     val terminalGates = if (terminal.Disciplines.isEmpty()) {
       mutableListOf()
     } else {
       terminal.Disciplines[0].Gates.toMutableList()
     }
 
+    competitionGates.add(0, GATE_START)
+    competitionGates.add(GATE_FINISH)
     binding.gatesList.removeAllViews()
     binding.terminalName.text = terminal.TerminalId
     binding.terminalPlate.setOnClickListener {
@@ -104,7 +118,7 @@ class TerminalsItemHolder(
       }
 
       (gateViewBinding.gate.parent as ViewGroup).removeView(gateViewBinding.gate)
-      gateViewBinding.gate.text = gateNo.toString()
+      gateViewBinding.gate.text = getGateName(gateNo)
       gateViewBinding.gate.setOnClickListener {
         if (terminalGates.any { it == gateNo }) {
           terminalGates.remove(gateNo)
