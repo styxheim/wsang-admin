@@ -12,7 +12,7 @@
         android:background="@color/gate_selected"
         android:clickable="true"
         android:focusable="true"
-        android:padding="24dp"
+        android:padding="18dp"
         android:text="@string/accept"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         app:layout_constraintBottom_toBottomOf="parent"
