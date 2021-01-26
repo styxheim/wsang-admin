@@ -83,7 +83,7 @@
     <string name="competition_loading">Load competition…</string>
     <string name="competition_loading_error">Error while load competition</string>
     <string name="competition_saving">Save competition…</string>
-    <string name="competition_saving_error">Error shiw save competition</string>
+    <string name="competition_saving_error">Error while save competition</string>
     <string name="competition_saving_success">Competition saved</string>
     <string name="competition_control">Control</string>
     <string name="competition_wipe">Wipe</string>
