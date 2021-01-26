@@ -61,6 +61,7 @@ class CompetitionListFragment : Fragment(), SharedPreferences.OnSharedPreference
       val competition =
         AdminAPI.RaceStatus(
           CompetitionId = competitionId,
+          CompetitionName = getString(R.string.competition_name_default, competitionId),
           TimeStamp = System.currentTimeMillis() / 1000,
           SyncPoint = 0
         )

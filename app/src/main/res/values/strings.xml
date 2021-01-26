@@ -61,6 +61,7 @@
     <string name="gate_finish">Finish</string>
 
     <!-- competition fragment -->
+    <string name="competition_name_default">Race #%1$d</string>
     <string name="competition_name_edit">Edit competition name</string>
     <string name="timestamp">Creation time</string>
     <string name="gates_null">&lt;no gate&gt;</string>

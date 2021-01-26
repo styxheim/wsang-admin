@@ -489,16 +489,30 @@ class CompetitionFragment : Fragment() {
     competitionDisciplineAdapter?.notifyDataSetChanged()
   }
 
-  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-    super.onViewCreated(view, savedInstanceState)
+  private fun setupCompetitionNameOnClick() {
+    val defaultCompetitionName =
+      getString(R.string.competition_name_default, competition.CompetitionId)
 
     /* competition name */
     val competitionNameOnClick = {
       updateStringWithDialog(
-        { competition.CompetitionName ?: "" },
+        {
+          (competition.CompetitionName ?: "").let {
+            if (it.isEmpty()) {
+              defaultCompetitionName
+            } else {
+              it
+            }
+          }
+        },
         { message ->
-          binding?.competitionName?.text = message
-          competition.CompetitionName = message
+          if (message.isEmpty()) {
+            binding?.competitionName?.text = defaultCompetitionName
+            competition.CompetitionName = defaultCompetitionName
+          } else {
+            binding?.competitionName?.text = message
+            competition.CompetitionName = message
+          }
           saveCompetitionToBundle()
           updateView()
         },
@@ -508,6 +522,12 @@ class CompetitionFragment : Fragment() {
     binding!!.competitionName.setOnClickListener { competitionNameOnClick() }
     binding!!.competitionNameId.setOnClickListener { competitionNameOnClick() }
     binding!!.competitionNamePlate.setOnClickListener { competitionNameOnClick() }
+  }
+
+  override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    super.onViewCreated(view, savedInstanceState)
+
+    setupCompetitionNameOnClick()
 
     /* penalties */
     val penaltiesOnClick = {
