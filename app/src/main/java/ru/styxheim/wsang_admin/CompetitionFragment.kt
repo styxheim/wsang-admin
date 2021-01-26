@@ -17,6 +17,7 @@ import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import ru.styxheim.wsang_admin.databinding.FragmentCompetitionBinding
 import java.lang.NumberFormatException
+import java.util.*
 
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
@@ -469,7 +470,8 @@ class CompetitionFragment : Fragment() {
     binding!!.competitionNameId.text =
       getString(R.string.competition_id_title, competition.CompetitionId)
     /* timestamp */
-    binding!!.timestamp.text = competition.TimeStamp.toString()
+    binding!!.timestamp.text = java.text.SimpleDateFormat("HH:mm:ss dd/MM/yyyy", Locale.US)
+      .format(Date(competition.TimeStamp))
     /* crews count */
     binding!!.crewsCount.text = getString(R.string.crews_count_null)
     competition.Crews?.let {
