@@ -13,9 +13,9 @@
     <!-- Action names for action bar -->
     <string name="updating">Updating...</string>
 
-    <string name="hello_first_fragment">Hello first fragment</string>
-    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
-    <string name="title_activity_settings">SettingsActivity</string>
+    <string name="hello_first_fragment" translatable="false">Hello first fragment</string>
+    <string name="hello_second_fragment" translatable="false">Hello second fragment. Arg: %1$s</string>
+    <string name="title_activity_settings" translatable="false">SettingsActivity</string>
 
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>
@@ -30,7 +30,7 @@
     <!-- templates defaults -->
     <string name="competition_name">Name</string>
     <string name="competition_status">status</string>
-    <string name="competition_id_title">Id: %d</string>
+    <string name="competition_id_title" translatable="false">Id: %d</string>
     <string name="competition_unknown_value">&lt;unknown&gt;</string>
     <string name="competition_name_null">Unknown (Id: %d)</string>
     <plurals name="competition_crews">
@@ -61,7 +61,7 @@
     <string name="gate_finish">Finish</string>
 
     <!-- competition fragment -->
-    <string name="competition_name_default">Race #%1$d</string>
+    <string name="competition_name_default" translatable="false">Race #%1$d</string>
     <string name="competition_name_edit">Edit competition name</string>
     <string name="timestamp">Last change</string>
     <string name="gates_null">&lt;no gate&gt;</string>
@@ -77,7 +77,7 @@
     <string name="delete">Delete</string>
     <string name="edit_penalties">Edit penalties</string>
     <string name="edit_gates">Edit gates list</string>
-    <string name="edit_list_hint">0, 1, 2, 3</string>
+    <string name="edit_list_hint" translatable="false">0, 1, 2, 3</string>
     <string name="edit_list_invalid_format">Invalid input format, must be: 0, 1, 2, 3</string>
     <string name="terminals">Terminals</string>
     <string name="competition_loading">Load competition…</string>
@@ -106,6 +106,6 @@
     <string name="discipline_name">Discipline name</string>
     <string name="set_discipline_name">Set discipline name</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
 
 </resources>
